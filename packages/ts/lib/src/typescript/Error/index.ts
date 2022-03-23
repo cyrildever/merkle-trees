@@ -18,3 +18,10 @@ export class InvalidJSONError extends Error {
     Object.setPrototypeOf(this, InvalidJSONError.prototype)
   }
 }
+
+export class InvalidMerkleProofError extends Error {
+  constructor(msg: string) {
+    super(`invalid proof: ${msg}`)
+    Object.setPrototypeOf(this, InvalidMerkleProofError.prototype)
+  }
+}

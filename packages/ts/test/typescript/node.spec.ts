@@ -3,7 +3,7 @@ import 'mocha'
 chai.should()
 
 import {
-  buildHashFunction, Hash, MerkleProof, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
+  buildHashFunction, Hash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
 } from '../../lib/src/typescript'
 
 describe('buildHashFunction', () => {
@@ -31,6 +31,18 @@ describe('MerkleProof', () => {
 
       const found = proof.toString()
       found.should.equal(expected)
+    })
+  })
+  describe('merkleProofFrom', () => {
+    it('should rebuild the appropriate Merkle proof', () => {
+      const proof = 'c2hhLTI1Ni4xMjM0NTY3ODkwYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmYWJjZGVmMDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OQ=='
+
+      const found = merkleProofFrom(proof)
+      found.engine.should.equal(SHA_256)
+      found.trail.should.have.lengthOf(2)
+      found.trail[0].should.eqls(Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'))
+      found.trail[1].should.eqls(Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex'))
+      found.toString().should.equal(proof)
     })
   })
 })

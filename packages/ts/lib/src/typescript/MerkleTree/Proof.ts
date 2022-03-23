@@ -1,3 +1,4 @@
+import { InvalidMerkleProofError } from '../Error'
 import { Hash, SHA_256 } from '../Hash'
 
 /**
@@ -32,3 +33,25 @@ export const MerkleProof = (trail: ReadonlyArray<Hash>, engine = SHA_256): Merkl
   engine,
   toString: toString(trail, engine)
 })
+
+/**
+ * Build a `MerkleProof` from the passed string, provided it's an actual stringified proof
+ * 
+ * @param {string} str - The base64-encoded proof 
+ * @throws InvalidMerkleTreeError
+ */
+export const merkleProofFrom = (str: string): MerkleProof => {
+  const decoded = Buffer.from(str, 'base64').toString()
+  const parts = decoded.split('.')
+  if (parts.length != 2) {
+    throw new InvalidMerkleProofError(str)
+  }
+  const engine = parts[0]
+  switch (engine) {
+    case SHA_256:
+      const hashes = parts[1].split(/(.{64})/).filter(_ => _.length == 64).map(_ => Buffer.from(_, 'hex')) // eslint-disable-line no-case-declarations
+      return MerkleProof(hashes, engine)
+    default:
+      throw new InvalidMerkleProofError(str)
+  }
+}
