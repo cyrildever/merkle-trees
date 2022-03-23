@@ -46,6 +46,24 @@ export const buildHashFunction = (engine: string, doubleHash = false): HashFunct
 // Supported hash functions
 export const SHA_256 = 'sha-256'
 
+const regexSha256 = new RegExp(/^[a-f0-9]{64}$/gi)
+
+/**
+ * Determine if it's a hash
+ * 
+ * @param {Buffer} h - The hash to test
+ * @param {string} engine - the hashing function name, eg. `'sha-256'`
+ * @returns `true` if the passed hash is possibly a rightful hash
+ */
+export const isCorrectHash = (h: Buffer, engine: string): boolean => {
+  switch (engine) {
+    case SHA_256:
+      return regexSha256.test(h.toString('hex'))
+    default:
+      return false
+  }
+}
+
 /**
  * Lexicographically sort the hexadecimal representation of the passed hashes
  * 

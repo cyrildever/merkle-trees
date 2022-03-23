@@ -1,11 +1,13 @@
+import {
+  buildHashFunction, Hash, isCorrectHash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
+} from '../../lib/src/typescript'
+
 import * as chai from 'chai'
 import 'mocha'
+import chaiAsPromised = require('chai-as-promised')
+chai.use(chaiAsPromised)
 chai.should()
 const expect = chai.expect
-
-import {
-  buildHashFunction, Hash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
-} from '../../lib/src/typescript'
 
 describe('buildHashFunction', () => {
   it('should return the right SHA-256 function', async () => {
@@ -18,6 +20,20 @@ describe('buildHashFunction', () => {
     expected = '954d5a49fd70d9b8bcdb35d252267829957f7ef7fa6c74f88419bdc5e82209f4'
     found = await doubleSha256(Buffer.from('test'))
     found.toString('hex').should.equal(expected)
+  })
+})
+describe('isCorrectHash', () => {
+  it('should know whether it is a correct hash', () => {
+    const correct = Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex')
+    let found = isCorrectHash(correct, SHA_256)
+    found.should.be.true
+
+    const incorrect = Buffer.from('incorrect')
+    found = isCorrectHash(incorrect, SHA_256)
+    found.should.be.false
+
+    found = isCorrectHash(correct, 'wrong-engine')
+    found.should.be.false
   })
 })
 describe('MerkleProof', () => {

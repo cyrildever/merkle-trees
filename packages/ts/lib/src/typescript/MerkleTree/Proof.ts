@@ -39,7 +39,7 @@ export const MerkleProof = (trail: ReadonlyArray<Hash>, engine = SHA_256): Merkl
  * 
  * @param {string} str - The base64-encoded proof
  * @returns the corresponding `MerkleProof` instance
- * @throws InvalidMerkleProofError
+ * @throws {InvalidMerkleProofError}
  */
 export const merkleProofFrom = (str: string): MerkleProof => {
   try {
