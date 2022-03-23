@@ -1,6 +1,7 @@
 import * as chai from 'chai'
 import 'mocha'
 chai.should()
+const expect = chai.expect
 
 import {
   buildHashFunction, Hash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
@@ -43,6 +44,8 @@ describe('MerkleProof', () => {
       found.trail[0].should.eqls(Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'))
       found.trail[1].should.eqls(Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex'))
       found.toString().should.equal(proof)
+
+      expect(() => merkleProofFrom('not-a-valid-proof')).to.throw('invalid proof: not-a-valid-proof')
     })
   })
 })

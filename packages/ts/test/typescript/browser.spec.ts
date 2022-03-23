@@ -2,6 +2,8 @@ import {
   buildHashFunction, Hash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
 } from '../../lib/src/typescript'
 
+const expect = chai.expect
+
 describe('buildHashFunction', () => {
   it('should return the right SHA-256 function', async () => {
     const sha256 = buildHashFunction(SHA_256)
@@ -39,6 +41,8 @@ describe('MerkleProof', () => {
       found.trail[0].should.eqls(Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'))
       found.trail[1].should.eqls(Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex'))
       found.toString().should.equal(proof)
+
+      expect(() => merkleProofFrom('not-a-valid-proof')).to.throw('invalid proof: not-a-valid-proof')
     })
   })
 })
