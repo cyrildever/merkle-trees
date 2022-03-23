@@ -1,4 +1,6 @@
-import { buildHashFunction, Hash, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes } from '../../lib/src/typescript'
+import {
+  buildHashFunction, Hash, MerkleProof, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
+} from '../../lib/src/typescript'
 
 describe('buildHashFunction', () => {
   it('should return the right SHA-256 function', async () => {
@@ -11,6 +13,21 @@ describe('buildHashFunction', () => {
     expected = '954d5a49fd70d9b8bcdb35d252267829957f7ef7fa6c74f88419bdc5e82209f4'
     found = await doubleSha256(Buffer.from('test'))
     found.toString('hex').should.equal(expected)
+  })
+})
+describe('MerkleProof', () => {
+  describe('toString', () => {
+    it('should print the appropriate proof', () => {
+      const hashes = [
+        Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'),
+        Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex')
+      ]
+      const proof = MerkleProof(hashes)
+      const expected = Buffer.from('sha-256.1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdefabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789').toString('base64')
+
+      const found = proof.toString()
+      found.should.equal(expected)
+    })
   })
 })
 describe('MerkleTree', () => {
