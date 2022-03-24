@@ -70,5 +70,5 @@ export const isCorrectHash = (h: Buffer, engine: string): boolean => {
  * @param {Hash[]} input - The array of hashes to sort 
  * @returns a sorted array of hashes
  */
-export const sortHashes = (input: ReadonlyArray<Hash>): ReadonlyArray<Hash> =>
-  input.map(_ => _.toString('hex')).sort((a: string, b: string) => a > b ? 1 : -1).map(_ => Buffer.from(_, 'hex'))
+export const sortHashes = (input: Array<Hash>): ReadonlyArray<Hash> =>
+  input.sort(Buffer.compare) // eslint-disable-line @typescript-eslint/unbound-method

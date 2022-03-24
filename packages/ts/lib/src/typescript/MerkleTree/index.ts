@@ -107,7 +107,7 @@ export class MerkleTree {
 
   private sort(): boolean {
     try {
-      this.leaves = sortHashes(this.leaves)
+      this.leaves = sortHashes(this.leaves.concat())
       return true
     } catch (_) {
       return false
