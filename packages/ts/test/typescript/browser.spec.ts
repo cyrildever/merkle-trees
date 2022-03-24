@@ -63,6 +63,12 @@ describe('MerkleProof', () => {
   })
 })
 describe('MerkleTree', () => {
+  describe('addLeaves', () => {
+    it('should fail if the tree remains empty', () => {
+      const tree = new MerkleTree()
+      expect(tree.addLeaves(false, Buffer.from('123'))).to.eventually.be.rejectedWith('empty tree') // eslint-disable-line @typescript-eslint/no-floating-promises
+    })
+  })
   describe('fromJSON', () => {
     it('should create the right JSON', () => {
       const empty = '{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"tree":{}}'
