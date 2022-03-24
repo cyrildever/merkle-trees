@@ -102,7 +102,7 @@ describe('MerkleTreeOptions', () => {
 })
 describe('sortHashes', () => {
   it('should sort hashes lexicographically', () => {
-    const hashes: Array<Hash> = [
+    const hashes: ReadonlyArray<Hash> = [
       'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789',
       '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
       'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
