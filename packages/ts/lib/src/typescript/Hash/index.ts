@@ -46,7 +46,7 @@ export const buildHashFunction = (engine: string, doubleHash = false): HashFunct
 // Supported hash functions
 export const SHA_256 = 'sha-256'
 
-const regexSha256 = new RegExp(/^[a-f0-9]{64}$/gi)
+const regexSha256 = new RegExp(/^[a-f0-9]{64}$/i)
 
 /**
  * Determine if it's a hash
