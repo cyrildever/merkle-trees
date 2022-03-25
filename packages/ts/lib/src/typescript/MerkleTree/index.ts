@@ -1,8 +1,9 @@
 import { Maybe, None, Some } from 'monet'
+import { reverse } from 'ts-utls'
 
 import {
   buildHashFunction, buildPath, Hash, Hashes, HashFunction, ImpossibleToSortError, InvalidJSONError, isCorrectHash,
-  MerkleProof, MerkleTreeOptions, sortHashes, TreeNotBuiltError
+  MerkleProof, MerkleTreeOptions, RIGHT, sortHashes, TreeNotBuiltError
 } from '..'
 
 export class MerkleTree {
@@ -132,6 +133,34 @@ export class MerkleTree {
    */
   public useDoubleHash(): boolean {
     return this.options.doubleHash
+  }
+
+  /**
+   * Check that the passed proof matches the passed data using the passed root hash
+   * 
+   * @param {MerkleProof} proof - The proof to use
+   * @param {Hash} leaf - The (hashed) data to check
+   * @param {string} rootHash - The hexadecimal representation of the root hash to compare to
+   * @param {boolean} rebuildingProof - Set to `true` to use the method rebuilding the proof (default: `false`)
+   * @returns `true` if the proof is valid for the passed leaf
+   */
+  public async validateProof(proof: MerkleProof, leaf: Hash, rootHash: string, rebuildingProof = false): Promise<boolean> {
+    if (!this.isReady || rootHash !== this.getRootHash()) {
+      return false
+    }
+    if (rebuildingProof) {
+      const rebuilt = this.getProof(leaf)
+      if (rebuilt.isNone()) {
+        return false
+      }
+      return rebuilt.some().toString() === proof.toString()
+    } else {
+      const path = reverse(proof.path)
+      const trail = proof.trail.concat().reverse()
+      const hFn = this.hashFunction
+      const proved = await trail.reduce(async (h, current, idx) => path[idx] === RIGHT ? hFn(Buffer.concat([current, await h])) : hFn(Buffer.concat([await h, current])), Promise.resolve(leaf))
+      return proved.toString('hex') === rootHash
+    }
   }
 
   /**
