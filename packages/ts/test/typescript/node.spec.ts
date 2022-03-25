@@ -1,5 +1,6 @@
 import {
-  buildHashFunction, Hash, isCorrectHash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions, SHA_256, sortHashes
+  buildHashFunction, buildPath, Hashes, isCorrectHash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions,
+  SHA_256, sortHashes
 } from '../../lib/src/typescript'
 
 import * as chai from 'chai'
@@ -9,31 +10,85 @@ chai.use(chaiAsPromised)
 chai.should()
 const expect = chai.expect
 
-describe('buildHashFunction', () => {
-  it('should return the right SHA-256 function', async () => {
-    const sha256 = buildHashFunction(SHA_256)
-    let expected = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
-    let found = await sha256(Buffer.from('test'))
-    found.toString('hex').should.equal(expected)
+describe('Hash', () => {
+  describe('buildHashFunction', () => {
+    it('should return the right SHA-256 function', async () => {
+      const sha256 = buildHashFunction(SHA_256)
+      let expected = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
+      let found = await sha256(Buffer.from('test'))
+      found.toString('hex').should.equal(expected)
 
-    const doubleSha256 = buildHashFunction(SHA_256, true)
-    expected = '954d5a49fd70d9b8bcdb35d252267829957f7ef7fa6c74f88419bdc5e82209f4'
-    found = await doubleSha256(Buffer.from('test'))
-    found.toString('hex').should.equal(expected)
+      const doubleSha256 = buildHashFunction(SHA_256, true)
+      expected = '954d5a49fd70d9b8bcdb35d252267829957f7ef7fa6c74f88419bdc5e82209f4'
+      found = await doubleSha256(Buffer.from('test'))
+      found.toString('hex').should.equal(expected)
+    })
+  })
+  describe('isCorrectHash', () => {
+    it('should know whether it is a correct hash', () => {
+      const correct = Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex')
+      let found = isCorrectHash(correct, SHA_256)
+      found.should.be.true
+
+      const incorrect = Buffer.from('incorrect')
+      found = isCorrectHash(incorrect, SHA_256)
+      found.should.be.false
+
+      found = isCorrectHash(correct, 'wrong-engine')
+      found.should.be.false
+    })
+  })
+  describe('sortHashes', () => {
+    it('should sort hashes lexicographically', () => {
+      const hashes: Hashes = [
+        'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789',
+        '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+      ].map(_ => Buffer.from(_, 'hex'))
+      const expected: Hashes = [
+        '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789'
+      ].map(_ => Buffer.from(_, 'hex'))
+
+      const found = sortHashes(hashes)
+      found.should.eqls(expected)
+    })
   })
 })
-describe('isCorrectHash', () => {
-  it('should know whether it is a correct hash', () => {
-    const correct = Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex')
-    let found = isCorrectHash(correct, SHA_256)
-    found.should.be.true
+describe('MerklePath', () => {
+  describe('buildPath', () => {
+    it('should return the right path', () => {
+      let size = 2
+      let expected = '0'
+      let found = buildPath(1, size, 1)
+      found.should.equal(expected)
 
-    const incorrect = Buffer.from('incorrect')
-    found = isCorrectHash(incorrect, SHA_256)
-    found.should.be.false
+      size = 4
+      expected = '10'
+      found = buildPath(1, size, 2)
+      found.should.equal(expected)
 
-    found = isCorrectHash(correct, 'wrong-engine')
-    found.should.be.false
+      size = 5
+      expected = '110'
+      found = buildPath(1, size, 3)
+      found.should.equal(expected)
+
+      size = 5
+      expected = '101'
+      found = buildPath(2, size, 3)
+      found.should.equal(expected)
+
+      size = 9
+      expected = '1110'
+      found = buildPath(1, size, 4)
+      found.should.equal(expected)
+
+      size = 9
+      expected = '0111'
+      found = buildPath(8, size, 4)
+      found.should.equal(expected)
+    })
   })
 })
 describe('MerkleProof', () => {
@@ -72,6 +127,25 @@ describe('MerkleTree', () => {
       expect(tree.addLeaves(false, Buffer.from('123'))).to.eventually.be.rejectedWith('empty tree') // eslint-disable-line @typescript-eslint/no-floating-promises
     })
   })
+  describe('depth', () => {
+    it('should return the correct depth or an error', async () => {
+      const tree = new MerkleTree()
+      expect(() => tree.depth()).to.throw('tree not built')
+
+      const hashes = [
+        Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'),
+        Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex')
+      ]
+      await tree.addLeaves(false, ...hashes)
+      const found = tree.depth()
+      found.should.equal(1)
+    })
+  })
+  describe('getProof', () => {
+    it('should be deterministic', () => {
+      // TODO ####
+    })
+  })
   describe('fromJSON', () => {
     it('should create the right JSON', () => {
       const empty = '{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"tree":{}}'
@@ -98,22 +172,5 @@ describe('MerkleTreeOptions', () => {
 
     const defaultOptions = JSON.stringify(found)
     defaultOptions.should.equal('{"doubleHash":false,"engine":"sha-256","sort":false}')
-  })
-})
-describe('sortHashes', () => {
-  it('should sort hashes lexicographically', () => {
-    const hashes: ReadonlyArray<Hash> = [
-      'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789',
-      '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-    ].map(_ => Buffer.from(_, 'hex'))
-    const expected: ReadonlyArray<Hash> = [
-      '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789'
-    ].map(_ => Buffer.from(_, 'hex'))
-
-    const found = sortHashes(hashes)
-    found.should.eqls(expected)
   })
 })

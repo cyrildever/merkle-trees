@@ -28,7 +28,8 @@
   },
   "homepage": "https://github.com/cyrildever/merkle-trees/packages/ts#readme",
   "dependencies": {
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "monet": "^0.9.3"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",

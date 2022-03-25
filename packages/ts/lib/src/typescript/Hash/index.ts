@@ -3,6 +3,7 @@ import { createHash } from 'crypto'
 import { InvalidEngineError } from '../Error'
 
 export type Hash = Buffer
+export type Hashes = ReadonlyArray<Hash>
 
 export type HashFunction = (item: Buffer) => Promise<Hash>
 
@@ -67,8 +68,8 @@ export const isCorrectHash = (h: Buffer, engine: string): boolean => {
 /**
  * Lexicographically sort the hexadecimal representation of the passed hashes
  * 
- * @param {Hash[]} input - The array of hashes to sort 
+ * @param {Hashes} input - The array of hashes to sort 
  * @returns a sorted array of hashes
  */
-export const sortHashes = (input: ReadonlyArray<Hash>): ReadonlyArray<Hash> =>
+export const sortHashes = (input: Hashes): Hashes =>
   input.concat().sort(Buffer.compare) // eslint-disable-line @typescript-eslint/unbound-method

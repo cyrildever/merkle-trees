@@ -26,6 +26,13 @@ export class InvalidMerkleProofError extends Error {
   }
 }
 
+export class TreeNotBuiltError extends Error {
+  constructor(msg = 'tree not built') {
+    super(msg)
+    Object.setPrototypeOf(this, TreeNotBuiltError.prototype)
+  }
+}
+
 export class UnableToBuildPathError extends Error {
   constructor(msg: string) {
     super(`unable to build path, found: ${msg}`)

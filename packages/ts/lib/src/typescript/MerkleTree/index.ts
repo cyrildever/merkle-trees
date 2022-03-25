@@ -1,14 +1,20 @@
+import { Maybe, None, Some } from 'monet'
+
 import {
-  buildHashFunction, Hash, HashFunction, ImpossibleToSortError, InvalidJSONError, isCorrectHash, MerkleProof, MerkleTreeOptions, sortHashes
+  buildHashFunction, buildPath, Hash, Hashes, HashFunction, ImpossibleToSortError, InvalidJSONError, isCorrectHash,
+  MerkleProof, MerkleTreeOptions, sortHashes, TreeNotBuiltError
 } from '..'
 
 export class MerkleTree {
+  private isReady = false
   private readonly hashFunction: HashFunction
-  private leaves: ReadonlyArray<Hash>
+  private leaves: Hashes
+  private levels: Array<Hashes>
   private readonly options: MerkleTreeOptions
 
   constructor(options?: MerkleTreeOptions) {
-    this.leaves = new Array<Buffer>()
+    this.leaves = new Array<Hash>()
+    this.levels = new Array<Hashes>()
     this.options = options !== undefined ? options : MerkleTreeOptions()
     this.hashFunction = buildHashFunction(this.options.engine, this.options.doubleHash)
   }
@@ -19,19 +25,31 @@ export class MerkleTree {
    * @param {boolean} doHash - Set to `true` to hash the passed source data (default: `false`)
    * @param {Buffer[]} data - The data to use as leaf
    * @returns a promise of the corresponding array of `MerkleProof` for the data
-   * @throws {ImpossibleToSortError}
+   * @throws {ImpossibleToSortError | TreeNotBuiltError}
    */
   public async addLeaves(doHash = false, ...data: Array<Buffer>): Promise<ReadonlyArray<MerkleProof>> {
     if (data.length === 0) {
       return new Array<MerkleProof>()
     }
-    this.leaves = this.leaves.concat(doHash ? await Promise.all(data.map(this.hashFunction)) : data.filter(_ => isCorrectHash(_, this.options.engine)))
+    this.isReady = false
+    this.leaves = this.leaves.concat(doHash ? await Promise.all(data.map(this.hashFunction)) : data.filter(_ => isCorrectHash(_, this.getEngine())))
     if (this.options.sort) {
       if (!this.sort()) {
         throw new ImpossibleToSortError()
       }
     }
     return this.make()
+  }
+
+  /**
+   * @returns the depth of the tree, ie. the number of levels excluding the root hash
+   * @throws {TreeNotBuiltError}
+   */
+  public depth(): number {
+    if (!this.isReady) {
+      throw new TreeNotBuiltError()
+    }
+    return this.levels.length - 1
   }
 
   /**
@@ -42,6 +60,34 @@ export class MerkleTree {
   }
 
   /**
+   * Try and retrieve the proof in the current Merkle tree for the passed hash
+   * 
+   * @param {Hash} leaf - The hashed data
+   * @returns some corresponding proof, or `None`
+   */
+  public getProof(leaf: Hash): Maybe<MerkleProof> {
+    if (!this.isReady) {
+      return None<MerkleProof>()
+    }
+    const index = this.leaves.indexOf(leaf)
+    if (index === -1) {
+      return None<MerkleProof>()
+    }
+    try {
+      const path = buildPath(index, this.size(), this.depth())
+      const trail = [...path].map((idx, level) => this.levels[level][parseInt(idx)])
+      if (trail.length === 0) {
+        return None<MerkleProof>()
+      }
+      const proof = MerkleProof(trail, this.getEngine())
+      return Some(proof)
+    } catch (e) {
+      console.error(e)
+      return None<MerkleProof>()
+    }
+  }
+
+  /**
    * @returns `true` if the current Merkle tree leaves are sorted
    */
   public isSorted(): boolean {
@@ -49,11 +95,22 @@ export class MerkleTree {
   }
 
   /**
+   * @returns the number of leaves
+   */
+  public size(): number {
+    return this.leaves.length
+  }
+
+  /**
    * IMPORTANT: Use with caution!
    * 
    * @returns the JSON-stringified representation of the current Merkle tree
+   * @throws {TreeNotBuiltError}
    */
   public toJSON(): string {
+    if (!this.isReady && this.leaves.length !== 0) {
+      throw new TreeNotBuiltError()
+    }
     // TODO ###
     const tree = '{}' // DEBUG
     return `{"options":${JSON.stringify(this.options)},"tree":${tree}}`
