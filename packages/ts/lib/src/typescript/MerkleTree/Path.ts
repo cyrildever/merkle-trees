@@ -2,11 +2,14 @@ import { UnableToBuildPathError } from '../Error'
 
 export type Path = string
 
+export const LEFT = '1'
+export const RIGHT = '0'
+
 const halfBucket = (from: number): number =>
   Math.pow(2, Math.ceil(Math.log(from) / Math.log(2))) / 2
 
 /**
- * Build the left-right (1 | 0) path from the root to the leaf at the passed index, ie.
+ * Build the left-right path from the root to the leaf at the passed index, ie.
  *
  *         (rootHash)
  *          /  \
@@ -30,10 +33,10 @@ export const buildPath = (index: number, size: number, depth: number): Path => {
   while (size > 0 && depth > 0) {
     const half = halfBucket(size)
     if (index < half) {
-      path += '1'
+      path += LEFT
       size = Math.max(half, 1)
     } else {
-      path += '0'
+      path += RIGHT
       index -= half
       if (size - half * 2 === 0) {
         size = Math.max(half, 1)

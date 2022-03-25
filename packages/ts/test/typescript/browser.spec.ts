@@ -96,8 +96,8 @@ describe('MerkleProof', () => {
         Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'),
         Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex')
       ]
-      const proof = MerkleProof(hashes)
-      const expected = Buffer.from('sha-256.1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdefabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789').toString('base64')
+      const proof = MerkleProof(hashes, '101')
+      const expected = Buffer.from('101.sha-256.1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdefabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789').toString('base64')
 
       const found = proof.toString()
       found.should.equal(expected)
@@ -105,10 +105,11 @@ describe('MerkleProof', () => {
   })
   describe('merkleProofFrom', () => {
     it('should rebuild the appropriate Merkle proof', () => {
-      const proof = 'c2hhLTI1Ni4xMjM0NTY3ODkwYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmYWJjZGVmMDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OQ=='
+      const proof = 'MTAxLnNoYS0yNTYuMTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZmFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODk='
 
       const found = merkleProofFrom(proof)
       found.engine.should.equal(SHA_256)
+      found.path.should.equal('101')
       found.trail.should.have.lengthOf(2)
       found.trail[0].should.eqls(Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'))
       found.trail[1].should.eqls(Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex'))
@@ -125,6 +126,20 @@ describe('MerkleTree', () => {
       expect(tree.addLeaves(false, Buffer.from('123'))).to.eventually.be.rejectedWith('empty tree') // eslint-disable-line @typescript-eslint/no-floating-promises
     })
   })
+  describe('depth', () => {
+    it('should return the correct depth or an error', async () => {
+      const tree = new MerkleTree()
+      expect(() => tree.depth()).to.throw('tree not built')
+
+      const hashes = [
+        Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'),
+        Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex')
+      ]
+      await tree.addLeaves(false, ...hashes)
+      const found = tree.depth()
+      found.should.equal(1)
+    })
+  })
   describe('getProof', () => {
     it('should be deterministic', async () => {
       const data = ['data1', 'data2', 'data3', 'data4', 'data5']
@@ -134,6 +149,13 @@ describe('MerkleTree', () => {
       const proof1 = tree.getProof(await sha256(Buffer.from('data1')))
       proof1.isSome().should.be.true
       proof1.some().toString().should.equal(maybeProofs[0].some().toString())
+
+
+      const proof2 = tree.getProof(await sha256(Buffer.from('data2')))
+      proof2.isSome().should.be.true
+      proof2.some().path.should.equal('110')
+      proof2.some().trail.should.have.lengthOf(3)
+      proof2.some().toString().should.equal(maybeProofs[1].some().toString())
 
       const proof5 = tree.getProof(await sha256(Buffer.from('data5')))
       proof5.isSome().should.be.true
@@ -155,6 +177,7 @@ describe('MerkleTree', () => {
 
       const json = '{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}'
       found = await MerkleTree.fromJSON(json)
+      found.getRootHash().should.equal('e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995')
       const proof = found.getProof(Buffer.from('d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c', 'hex'))
       proof.isSome().should.be.true
     })

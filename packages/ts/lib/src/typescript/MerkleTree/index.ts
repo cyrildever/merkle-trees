@@ -78,15 +78,26 @@ export class MerkleTree {
     }
     try {
       const path = buildPath(index, this.size(), this.depth())
-      const trail = [...path].map((idx, level) => this.levels[level][parseInt(idx)]).filter(_ => _ !== undefined)
+      const trail = [...path].map((idx, level) => this.levels[level + 1][parseInt(idx)])
       if (trail.length === 0) {
         return None<MerkleProof>()
       }
-      return Some(MerkleProof(trail, this.getEngine()))
+      return Some(MerkleProof(trail, path, this.getEngine()))
     } catch (e) {
       console.error(e)
       return None<MerkleProof>()
     }
+  }
+
+  /**
+   * @returns the hexadecimal representation of the root hash of the current Merkle tree
+   * @throws {TreeNotBuiltError}
+   */
+  public getRootHash(): string {
+    if (!this.isReady) {
+      throw new TreeNotBuiltError()
+    }
+    return this.levels[0][0].toString('hex')
   }
 
   /**
