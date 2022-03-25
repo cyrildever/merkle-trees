@@ -25,3 +25,10 @@ export class InvalidMerkleProofError extends Error {
     Object.setPrototypeOf(this, InvalidMerkleProofError.prototype)
   }
 }
+
+export class UnableToBuildPathError extends Error {
+  constructor(msg: string) {
+    super(`unable to build path, found: ${msg}`)
+    Object.setPrototypeOf(this, UnableToBuildPathError.prototype)
+  }
+}
