@@ -9,12 +9,14 @@ export class MerkleTree {
   private isReady = false
   private readonly hashFunction: HashFunction
   private leaves: Hashes
+  private leavesHex: Array<string>
   private levels: Array<Hashes>
   private readonly options: MerkleTreeOptions
 
   constructor(options?: MerkleTreeOptions) {
     this.leaves = new Array<Hash>()
     this.levels = new Array<Hashes>()
+    this.leavesHex = []
     this.options = options !== undefined ? options : MerkleTreeOptions()
     this.hashFunction = buildHashFunction(this.options.engine, this.options.doubleHash)
   }
@@ -27,12 +29,13 @@ export class MerkleTree {
    * @returns a promise of the corresponding array of `MerkleProof` for the data
    * @throws {ImpossibleToSortError | TreeNotBuiltError}
    */
-  public async addLeaves(doHash = false, ...data: Array<Buffer>): Promise<ReadonlyArray<MerkleProof>> {
+  public async addLeaves(doHash = false, ...data: Array<Buffer>): Promise<ReadonlyArray<Maybe<MerkleProof>>> {
     if (data.length === 0) {
-      return new Array<MerkleProof>()
+      return new Array<Maybe<MerkleProof>>()
     }
     this.isReady = false
     this.leaves = this.leaves.concat(doHash ? await Promise.all(data.map(this.hashFunction)) : data.filter(_ => isCorrectHash(_, this.getEngine())))
+    this.leavesHex = this.leaves.map(_ => _.toString('hex'))
     if (this.options.sort) {
       if (!this.sort()) {
         throw new ImpossibleToSortError()
@@ -69,18 +72,17 @@ export class MerkleTree {
     if (!this.isReady) {
       return None<MerkleProof>()
     }
-    const index = this.leaves.indexOf(leaf)
+    const index = this.leavesHex.indexOf(leaf.toString('hex'))
     if (index === -1) {
       return None<MerkleProof>()
     }
     try {
       const path = buildPath(index, this.size(), this.depth())
-      const trail = [...path].map((idx, level) => this.levels[level][parseInt(idx)])
+      const trail = [...path].map((idx, level) => this.levels[level][parseInt(idx)]).filter(_ => _ !== undefined)
       if (trail.length === 0) {
         return None<MerkleProof>()
       }
-      const proof = MerkleProof(trail, this.getEngine())
-      return Some(proof)
+      return Some(MerkleProof(trail, this.getEngine()))
     } catch (e) {
       console.error(e)
       return None<MerkleProof>()
@@ -111,9 +113,7 @@ export class MerkleTree {
     if (!this.isReady && this.leaves.length !== 0) {
       throw new TreeNotBuiltError()
     }
-    // TODO ###
-    const tree = '{}' // DEBUG
-    return `{"options":${JSON.stringify(this.options)},"tree":${tree}}`
+    return `{"options":${JSON.stringify(this.options)},"leaves":${JSON.stringify(this.leavesHex)}}`
   }
 
   /**
@@ -130,18 +130,18 @@ export class MerkleTree {
    * @returns the built `MerkleTree` instance
    * @throws {InvalidJSONError}
    */
-  public static fromJSON(str: string): MerkleTree {
+  public static async fromJSON(str: string): Promise<MerkleTree> {
     try {
       /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument */
       const json = JSON.parse(str)
       const options = json.options !== undefined ? json.options as MerkleTreeOptions : MerkleTreeOptions()
       const tree = new MerkleTree(options)
-      if (json.tree === undefined || Object.keys(json.tree).length === 0 && Object.getPrototypeOf(json.tree) === Object.prototype) {
+      if (json.leaves === undefined || Object.keys(json.leaves).length === 0 && Object.getPrototypeOf(json.leaves) === Object.prototype) {
         return tree
       }
-      // TODO #########################
-      console.log(json.tree) // DEBUG
+      const leavesHex: Array<string> = json.leaves
       /* eslint-enable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument */
+      await tree.addLeaves(false, ...leavesHex.map(_ => Buffer.from(_, 'hex')))
       return tree
     } catch (e) {
       if (e instanceof Error) {
@@ -154,12 +154,40 @@ export class MerkleTree {
 
   // For internal use only
 
-  private async make(): Promise<ReadonlyArray<MerkleProof>> {
+  private async make(): Promise<ReadonlyArray<Maybe<MerkleProof>>> {
     if (this.leaves.length === 0) {
       return Promise.reject(new Error('empty tree'))
     }
-    // TODO ###
-    return new Array<MerkleProof>() // DEBUG
+
+    // Build the actual tree
+    this.levels.unshift(this.leaves)
+    // eslint-disable-next-line no-loops/no-loops
+    while (this.levels[0].length > 1) {
+      this.levels.unshift(await this.nextLevel())
+    }
+    if (this.levels.length === 0) {
+      return Promise.reject(new Error('empty tree'))
+    }
+    this.isReady = true
+
+    // Retrieve the proofs
+    return this.leaves.map(_ => this.getProof(_))
+  }
+
+  private async nextLevel(): Promise<Hashes> {
+    const nodes = new Array<Hash>()
+    const fromLevel = this.levels[0]
+    const fromLevelCount = fromLevel.length
+    // eslint-disable-next-line no-loops/no-loops
+    for (let i = 0; i < fromLevelCount; i += 2) {
+      if (i + 1 <= fromLevelCount - 1) {
+        nodes.push(await this.hashFunction(Buffer.concat([fromLevel[i], fromLevel[i + 1]])))
+      } else {
+        // Odd number promoted to the next level
+        nodes.push(fromLevel[i])
+      }
+    }
+    return nodes
   }
 
   private sort(): boolean {
