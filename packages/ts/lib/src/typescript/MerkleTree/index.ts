@@ -83,7 +83,7 @@ export class MerkleTree {
       if (trail.length === 0) {
         return None<MerkleProof>()
       }
-      return Some(MerkleProof(trail, path, this.getEngine()))
+      return Some(MerkleProof(trail, path, this.leaves.length, this.getEngine()))
     } catch (e) {
       console.error(e)
       return None<MerkleProof>()
