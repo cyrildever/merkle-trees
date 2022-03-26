@@ -1,4 +1,4 @@
-import { UnableToBuildPathError } from '../Error'
+import { UnableToBuildPathError } from '..'
 
 export type Path = string
 

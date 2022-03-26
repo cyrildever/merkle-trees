@@ -1,4 +1,4 @@
-import { SHA_256 } from '../Hash'
+import { SHA_256 } from '..'
 
 /**
  * Define the `MerkleTree` options
