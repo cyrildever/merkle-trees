@@ -1,4 +1,4 @@
-package model
+package hash
 
 import (
 	"crypto/sha256"
@@ -27,8 +27,8 @@ var (
 	regexSha256 = regexp.MustCompile(`^[a-f0-9]{64}$`)
 )
 
-// BuildHashFunction ...
-func BuildHashFunction(engine string, doubleHash ...bool) (fn HashFunction, err error) {
+// BuildFunction ...
+func BuildFunction(engine string, doubleHash ...bool) (fn HashFunction, err error) {
 	doDoubleHash := false
 	if len(doubleHash) == 1 && doubleHash[0] {
 		doDoubleHash = true
@@ -52,8 +52,8 @@ func BuildHashFunction(engine string, doubleHash ...bool) (fn HashFunction, err 
 	return
 }
 
-// IsCorrectHash ...
-func IsCorrectHash(h []byte, engine string) bool {
+// IsCorrect ...
+func IsCorrect(h []byte, engine string) bool {
 	switch engine {
 	case SHA_256:
 		return regexSha256.MatchString(utls.ToHex(h))
