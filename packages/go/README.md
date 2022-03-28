@@ -15,6 +15,13 @@ $ go get github.com/cyrildever/merkle-trees/packages/go
 ```
 
 
+### Build
+
+```console
+$ go build -o merkle-tree
+```
+
+
 ### License
 
 This library is distributed under an MIT license.
