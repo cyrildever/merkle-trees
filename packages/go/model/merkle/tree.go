@@ -28,6 +28,7 @@ type Tree struct {
 func (t *Tree) AddLeaves(doHash bool, data ...[]byte) (proofs []*Proof, err error) {
 	t.isReady = false
 	if len(data) == 0 {
+		err = fmt.Errorf("empty tree")
 		return
 	}
 	leaves := hash.Hashes{}
@@ -70,21 +71,21 @@ func (t *Tree) GetEngine() string {
 }
 
 // GetProof retrieves the proof in the current Merkle tree for the passed hash
-func (t *Tree) GetProof(leaf hash.Hash) *Proof {
+func (t *Tree) GetProof(leaf hash.Hash) (p *Proof, found bool) {
 	if !t.isReady {
-		return nil
+		return
 	}
 	index := indexOf(leaf, t.leaves)
 	if index == -1 {
-		return nil
+		return
 	}
 	depth, err := t.Depth()
 	if err != nil {
-		return nil
+		return
 	}
 	path, err := NewPath(index, t.Size(), depth)
 	if err != nil {
-		return nil
+		return
 	}
 	trail := hash.Hashes{}
 	for level, idx := range path {
@@ -93,9 +94,9 @@ func (t *Tree) GetProof(leaf hash.Hash) *Proof {
 		}
 	}
 	if len(trail) == 0 {
-		return nil
+		return
 	}
-	return NewProof(trail, path, t.Size(), t.GetEngine())
+	return NewProof(trail, path, t.Size(), t.GetEngine()), true
 }
 
 // GetRootHash returns the hexadecimal representation of the root hash of the current Merkle tree
@@ -144,7 +145,12 @@ func (t *Tree) make() (proofs []*Proof, err error) {
 
 	// Retrieve the proofs
 	for _, leaf := range t.leaves {
-		proofs = append(proofs, t.GetProof(leaf))
+		if proof, found := t.GetProof(leaf); found {
+			proofs = append(proofs, proof)
+		} else {
+			err = fmt.Errorf("unable to retrive proof")
+			return
+		}
 	}
 
 	return
