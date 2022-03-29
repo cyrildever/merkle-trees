@@ -7,7 +7,7 @@ import (
 )
 
 // Path ...
-type Path string
+type Path = string
 
 const (
 	LEFT  = "1"

@@ -18,6 +18,20 @@ func NewInvalidEngineError(msg string) *InvalidEngineError {
 	}
 }
 
+// InvalidMerkleProofError ...
+type InvalidMerkleProofError struct {
+	message string
+}
+
+func (e InvalidMerkleProofError) Error() string {
+	return e.message
+}
+func NewInvalidMerkleProofError(msg string) *InvalidMerkleProofError {
+	return &InvalidMerkleProofError{
+		message: fmt.Sprintf("invalid proof: %s", msg),
+	}
+}
+
 // UnableToBuildPathError ...
 type UnableToBuildPathError struct {
 	message string

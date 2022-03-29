@@ -10,10 +10,10 @@ import (
 )
 
 // Hash ...
-type Hash []byte
+type Hash = []byte
 
 // Hashes ...
-type Hashes []Hash
+type Hashes = []Hash
 
 // HashFunction
 type HashFunction func([]byte) Hash
