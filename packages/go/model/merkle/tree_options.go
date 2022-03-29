@@ -6,9 +6,9 @@ import (
 
 // TreeOptions ...
 type TreeOptions struct {
-	DoubleHash bool
-	Engine     string
-	Sort       bool
+	DoubleHash bool   `json:"doubleHash"`
+	Engine     string `json:"engine"`
+	Sort       bool   `json:"sort"`
 }
 
 // DEFAULT_TREE_OPTIONS sets double hash and sort to `false`, and engine to "sha-256"

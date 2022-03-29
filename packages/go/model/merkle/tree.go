@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/cyrildever/go-utls/common/packer"
 	utls "github.com/cyrildever/go-utls/common/utils"
 	"github.com/cyrildever/merkle-trees/packages/go/exception"
 	"github.com/cyrildever/merkle-trees/packages/go/model/hash"
@@ -114,6 +115,26 @@ func (t *Tree) IsSorted() bool {
 	return t.options.Sort
 }
 
+// JSON returns the JSON-stringified representation of the current Merkle tree
+//
+// IMPORTANT: Use with caution!
+func (t *Tree) JSON() (json string, err error) {
+	if !t.isReady && len(t.leaves) != 0 {
+		err = exception.NewTreeNotBuiltError()
+		return
+	}
+	opts, err := packer.JSONMarshal(*t.options)
+	if err != nil {
+		return
+	}
+	leaves, err := packer.JSONMarshal(t.leavesHex)
+	if err != nil {
+		return
+	}
+	json = fmt.Sprintf(`{"options":%s,"leaves":%s}`, opts, leaves)
+	return
+}
+
 // Size returns the number of leaves
 func (t *Tree) Size() int {
 	return len(t.leaves)
@@ -191,6 +212,44 @@ func NewTree(options ...*TreeOptions) (t *Tree, err error) {
 		levels:       []hash.Hashes{},
 		options:      opts,
 	}, nil
+}
+
+type decodedJSON struct {
+	Options *TreeOptions `json:"options"`
+	Leaves  []string     `json:"leaves"`
+}
+
+// TreeFrom builds a `MerkleTree` instance from the passed string
+func TreeFrom(json string) (t *Tree, err error) {
+	var decoded decodedJSON
+	if err = packer.JSONUnmarshal([]byte(json), &decoded); err != nil {
+		return
+	}
+	opts := DEFAULT_TREE_OPTIONS
+	if decoded.Options != nil {
+		opts = decoded.Options
+	}
+	tree, err := NewTree(opts)
+	if err != nil {
+		return
+	}
+	leavesHex := decoded.Leaves
+	leaves := hash.Hashes{}
+	for _, leaf := range leavesHex {
+		if l, e := utls.FromHex(leaf); e == nil {
+			leaves = append(leaves, l)
+		}
+	}
+	if len(leaves) == 0 {
+		err = fmt.Errorf("empty tree")
+		return
+	}
+	if _, e := tree.AddLeaves(false, leaves...); e != nil {
+		err = e
+		return
+	}
+	t = tree
+	return
 }
 
 //--- utility

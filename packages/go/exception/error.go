@@ -18,6 +18,20 @@ func NewInvalidEngineError(msg string) *InvalidEngineError {
 	}
 }
 
+// InvalidJSONError ...
+type InvalidJSONError struct {
+	message string
+}
+
+func (e InvalidJSONError) Error() string {
+	return e.message
+}
+func NewInvalidJSONError(msg string) *InvalidJSONError {
+	return &InvalidJSONError{
+		message: msg,
+	}
+}
+
 // InvalidMerkleProofError ...
 type InvalidMerkleProofError struct {
 	message string

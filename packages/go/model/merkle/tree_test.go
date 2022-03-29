@@ -62,6 +62,54 @@ func TestGetProof(t *testing.T) {
 	assert.Equal(t, proof1_2.String(), proof1.String())
 }
 
+// TestMerkleTreeFrom ...
+func TestMerkleTreeFrom(t *testing.T) {
+	_, err := merkle.TreeFrom(`{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":[]}`)
+	assert.Error(t, err, "empty tree")
+
+	json := `{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}`
+	tree, err := merkle.TreeFrom(json)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rootHash, err := tree.GetRootHash()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, rootHash, "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+	_, found := tree.GetProof(utls.Must(utls.FromHex("d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c")))
+	assert.Assert(t, found)
+}
+
+// TestMerkleTreeJSON ...
+func TestMerkleTreeJSON(t *testing.T) {
+	empty, err := merkle.NewTree()
+	if err != nil {
+		t.Fatal(err)
+	}
+	json, err := empty.JSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, json, `{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":[]}`)
+
+	data := [][]byte{[]byte("data1"), []byte("data2"), []byte("data3"), []byte("data4"), []byte("data5")}
+	tree, err := merkle.NewTree()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tree.AddLeaves(true, data...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	json, err = tree.JSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := `{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}`
+	assert.Equal(t, json, expected)
+}
+
 // TestMerkleTreeDepth ...
 func TestMerkleTreeDepth(t *testing.T) {
 	tree, err := merkle.NewTree()
