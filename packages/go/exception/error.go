@@ -32,6 +32,20 @@ func NewInvalidMerkleProofError(msg string) *InvalidMerkleProofError {
 	}
 }
 
+// TreeNotBuiltError ...
+type TreeNotBuiltError struct {
+	message string
+}
+
+func (e TreeNotBuiltError) Error() string {
+	return e.message
+}
+func NewTreeNotBuiltError() *TreeNotBuiltError {
+	return &TreeNotBuiltError{
+		message: "tree not built",
+	}
+}
+
 // UnableToBuildPathError ...
 type UnableToBuildPathError struct {
 	message string
