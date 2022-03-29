@@ -9,6 +9,10 @@ _TypeScript implementation of Merkle tree_
 
 This library defines my special implementation in TypeScript of the notorious Merkle trees. Feel free to use it (with the appropriate credits).
 
+
+Other implementations include: [Go](../go/README.md), [Python](../py/README.md) and [Scala](../scala/README.md).
+
+
 ### Usage
 
 ```console
@@ -41,7 +45,7 @@ assert(tree2.size() === proofs1[0].size)
 assert(tree2.validateProof(proofs1[0], sha256('1'), rootHash) === true)
 
 // Enrich with new hashed data
-const proofs2 = await tree2.addLeaves(false, '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789')
+const proofs2 = await tree2.addLeaves(false, Buffer.from('1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', 'hex'), Buffer.from('abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789', 'hex'))
 assert(tree2.size() === 5)
 assert(tree2.depth() === 2)
 

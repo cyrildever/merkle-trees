@@ -23,7 +23,7 @@ export class MerkleTree {
   }
 
   /**
-   * Add leaves, either sources to hash (by passing `true` to the first parameter) or hashes
+   * Add leaves, either sources (by passing `true` to the first parameter) or hashes
    * 
    * @param {boolean} doHash - Set to `true` to hash the passed source data (default: `false`)
    * @param {Buffer[]} data - The data to use as leaf
@@ -31,17 +31,17 @@ export class MerkleTree {
    * @throws {ImpossibleToSortError | TreeNotBuiltError}
    */
   public async addLeaves(doHash = false, ...data: Array<Buffer>): Promise<ReadonlyArray<Maybe<MerkleProof>>> {
-    if (data.length === 0) {
-      return new Array<Maybe<MerkleProof>>()
-    }
     this.isReady = false
+    if (data.length === 0) {
+      return Promise.reject(new Error('empty tree'))
+    }
     this.leaves = this.leaves.concat(doHash ? await Promise.all(data.map(this.hashFunction)) : data.filter(_ => isCorrectHash(_, this.getEngine())))
-    this.leavesHex = this.leaves.map(_ => _.toString('hex'))
     if (this.options.sort) {
       if (!this.sort()) {
         throw new ImpossibleToSortError()
       }
     }
+    this.leavesHex = this.leaves.map(_ => _.toString('hex'))
     return this.make()
   }
 
@@ -102,7 +102,7 @@ export class MerkleTree {
   }
 
   /**
-   * @returns `true` if the current Merkle tree leaves are sorted
+   * @returns `true` if the current Merkle tree leaves are sorted, `false` otherwise
    */
   public isSorted(): boolean {
     return this.options.sort

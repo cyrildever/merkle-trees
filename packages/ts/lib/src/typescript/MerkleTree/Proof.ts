@@ -1,18 +1,18 @@
-import { InvalidMerkleProofError, Hash, Path, SHA_256 } from '..'
+import { Hashes, InvalidMerkleProofError, Path, SHA_256 } from '..'
 
 /**
  * The proof consists of the trail of intermediate hashes suffixed with the path, the name of the hashing engine used and the size of the Merkle tree at the date of the proof.
  * 
- * @param {Hash[]} trail - The intermediate hashes bottom up (not including the final root hash)
+ * @param {Hashes} trail - The intermediate hashes bottom up (not including the final root hash)
  * @param {Path} path - The path from root to leaf
  * @param {number} size - The number of leaves in the Merkle tree at issuance of the proof
  * @param {string} engine - The name of the hashing function (default: `'sha-256'`)
  */
 export interface MerkleProof {
-  trail: ReadonlyArray<Hash>
+  trail: Hashes
   path: Path
-  size: number
   engine: string
+  size: number
 
   /**
    * Example of a Merkle tree showing the target leaf and the two intermediate hashes comprised in the trail of the proof:
@@ -29,10 +29,10 @@ export interface MerkleProof {
   toString: () => string
 }
 
-const toString = (trail: ReadonlyArray<Hash>, path: Path, size: number, engine: string) => (): string =>
+const toString = (trail: Hashes, path: Path, size: number, engine: string) => (): string =>
   Buffer.from(`${Buffer.concat(trail).toString('hex')}.${path}.${engine}.${size}`).toString('base64')
 
-export const MerkleProof = (trail: ReadonlyArray<Hash>, path: Path, size: number, engine = SHA_256): MerkleProof => ({
+export const MerkleProof = (trail: Hashes, path: Path, size: number, engine = SHA_256): MerkleProof => ({
   trail,
   path,
   size,
