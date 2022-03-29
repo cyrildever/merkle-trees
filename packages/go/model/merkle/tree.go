@@ -145,6 +145,29 @@ func (t *Tree) UseDoubleHash() bool {
 	return t.options.DoubleHash
 }
 
+// ValidateProof checks that the passed proof matches the passed data using the passed root hash
+func (t *Tree) ValidateProof(proof *Proof, leaf hash.Hash, rootHash string, rebuildProof ...bool) bool {
+	if r, err := t.GetRootHash(); err != nil || r != rootHash {
+		return false
+	}
+	if len(rebuildProof) == 1 && rebuildProof[0] {
+		rebuilt, found := t.GetProof(leaf)
+		return found && rebuilt.String() == proof.String()
+	} else {
+		path := utls.Reverse(proof.Path)
+		trail := reverse(proof.Trail)
+		h := leaf
+		for idx, current := range trail {
+			if string(path[idx]) == RIGHT {
+				h = t.hashFunction(append(current, h...))
+			} else {
+				h = t.hashFunction(append(h, current...))
+			}
+		}
+		return utls.ToHex(h) == rootHash
+	}
+}
+
 // For internal use only
 
 func (t *Tree) make() (proofs []*Proof, err error) {
@@ -261,4 +284,17 @@ func indexOf(item hash.Hash, slice hash.Hashes) int {
 		}
 	}
 	return -1
+}
+
+func reverse(slice hash.Hashes) hash.Hashes {
+	n := len(slice)
+	if n < 2 {
+		return slice
+	}
+	reversed := make(hash.Hashes, n)
+	for _, h := range slice {
+		n--
+		reversed[n] = h
+	}
+	return reversed[n:]
 }

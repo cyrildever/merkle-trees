@@ -133,3 +133,27 @@ func TestMerkleTreeDepth(t *testing.T) {
 	}
 	assert.Equal(t, depth, 1)
 }
+
+// TestValidateProof ...
+func TestValidateProof(t *testing.T) {
+	toProve, err := merkle.ProofFrom("ZTE5NWRhNGM0MGYyNmI4NWViMmI2MjJlMWMwZDFjZTczZDRkOGJmNDE4M2NkODA4ZDM5YTU3ZTg1NTA5MzQ0NmFhNzVjZDVlMjUzMWYwNzJjNzAwN2JiMTkxZmViZGNkYmUyM2Q5YTRhZTMwY2RiYjg0Y2I1YTg2OWNlOWFiODM1YjQxMzYyYmM4MmI3ZjNkNTZlZGM1YTMwNmRiMjIxMDU3MDdkMDFmZjQ4MTllMjZmYWVmOTcyNGEyZDQwNmM5LjExMC5zaGEtMjU2LjU=")
+	if err != nil {
+		t.Fatal(err)
+	}
+	json := `{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}`
+	tree, err := merkle.TreeFrom(json)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, tree.Size(), toProve.Size) // It's supposed to be tested somehow, even though it's not part of the proof per se
+	found := tree.ValidateProof(toProve, sha256([]byte("data2")), "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+	assert.Assert(t, found)
+
+	// Invalid data
+	found = tree.ValidateProof(toProve, sha256([]byte("data6")), "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+	assert.Assert(t, found == false)
+
+	// Invalid proof for existing data
+	found = tree.ValidateProof(toProve, sha256([]byte("data1")), "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+	assert.Assert(t, found == false)
+}
