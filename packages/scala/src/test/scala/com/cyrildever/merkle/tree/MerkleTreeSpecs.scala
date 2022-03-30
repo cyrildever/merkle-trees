@@ -1,7 +1,7 @@
 package com.cyrildever.merkle.tree
 
 import com.cyrildever.BasicUnitSpecs
-import com.cyrildever.merkle.exception.{EmptyTreeException, TreeNotBuiltException}
+import com.cyrildever.merkle.exception._
 import com.cyrildever.merkle.hash.Hash._
 import com.cyrildever.merkle.hash.HashFunction._
 
@@ -66,6 +66,19 @@ class MerkleTreeSpecs extends BasicUnitSpecs {
     tree2.addLeaves(true, data: _*)
     val proof1_2 = tree2.getProof(sha256("data1".getBytes))
     proof1_2.get.toString should equal (proof1.get.toString)
+  }
+
+  "MerkleTree.fromJSON" should "create the right JSON" in {
+    val empty = s"""{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":[]}"""
+    the [InvalidJSONException] thrownBy {
+      MerkleTree.fromJSON(empty)
+    } should have message "empty tree"
+
+    val json = s"""{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}"""
+    val found = MerkleTree.fromJSON(json)
+    found.getRootHash should equal ("e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+    val proof = found.getProof(fromHex("d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c"))
+    proof.isDefined shouldBe true
   }
 
   "MerkleTree.toJSON" should "build the appropriate JSON" in {

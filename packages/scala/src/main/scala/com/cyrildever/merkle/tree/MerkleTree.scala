@@ -2,9 +2,10 @@ package com.cyrildever.merkle.tree
 
 import com.cyrildever.merkle.Path._
 import com.cyrildever.merkle.Proof
-import com.cyrildever.merkle.exception.{EmptyTreeException, TreeNotBuiltException}
+import com.cyrildever.merkle.exception.{EmptyTreeException, InvalidJSONException, TreeNotBuiltException}
 import com.cyrildever.merkle.hash.Hash._
 import com.cyrildever.merkle.hash.HashFunction._
+import org.json4s.{DefaultFormats, Formats}
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 
@@ -14,7 +15,7 @@ import org.json4s.jackson.JsonMethods._
  * @author  Cyril Dever
  * @since   1.0
  * @version 1.0
- * @param options The Merkle tree options
+ * @param options [optional] The Merkle tree options (default: `MerkleTreeOptions(false, "sha-256", false)`)
  */
 case class MerkleTree(options: MerkleTreeOptions = MerkleTreeOptions.DEFAULT) {
   private var isReady: Boolean = false
@@ -135,5 +136,30 @@ case class MerkleTree(options: MerkleTreeOptions = MerkleTreeOptions.DEFAULT) {
 
   private def sort(doSort: Boolean, leaves: Hashes): Hashes =
     if (doSort) sortHashes(leaves) else leaves
+
+}
+object MerkleTree {
+  implicit val formats: Formats = DefaultFormats
+
+  /**
+   * Build a `MerkleTree` instance from the passed string
+   *
+   * @param str  The JSON-stringified representation of a full Merkle tree
+   * @return the built `MerkleTree` instance
+   */
+  @throws[InvalidJSONException]
+  def fromJSON(str: String): MerkleTree = try {
+    val json = parse(str)
+    val options = (json \\ "options").extract[MerkleTreeOptions]
+    val tree = MerkleTree(options)
+    val leavesHex = (json \\ "leaves").extract[Seq[String]]
+    if (leavesHex.isEmpty) {
+      throw EmptyTreeException()
+    }
+    tree.addLeaves(false, leavesHex.map(fromHex): _*)
+    tree
+  } catch {
+    case e: Exception => throw InvalidJSONException(e.getMessage, e.getCause)
+  }
 
 }
