@@ -1,4 +1,4 @@
-package com.cyrildever.hash
+package com.cyrildever.merkle.hash
 
 /**
  * Hex utility

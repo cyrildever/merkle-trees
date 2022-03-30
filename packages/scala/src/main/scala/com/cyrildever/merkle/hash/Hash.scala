@@ -1,5 +1,6 @@
-package com.cyrildever.hash
+package com.cyrildever.merkle.hash
 
+import com.cyrildever.merkle.exception.InvalidEngineException
 import scorex.crypto.hash._
 
 /**
@@ -21,6 +22,7 @@ object Hash {
   }
   def fromHex(str: String): Hash = Hex.stringToSomeByteArray(str).getOrElse(Seq.empty)
 
+  @throws[InvalidEngineException]
   def buildHashFunction(engine: String, doubleHash: Boolean = false): Seq[Byte] => Hash =
     (item: Seq[Byte]) => engine match {
       case SHA_256 =>
@@ -29,7 +31,7 @@ object Hash {
         } else {
           Sha256.hash(item.toArray)
         }
-      case _ => throw new Exception(s"""invalid engine: ${engine}""")
+      case _ => throw InvalidEngineException(engine)
     }
 
   /**

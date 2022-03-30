@@ -1,5 +1,7 @@
 package com.cyrildever.merkle
 
+import com.cyrildever.merkle.exception.UnableToBuildPathException
+
 /**
  * Path utility
  *
@@ -31,6 +33,7 @@ object Path {
    * @param depth The depth of the Merkle tree
    * @return the path code
    */
+  @throws[UnableToBuildPathException]
   def buildPath(index: Int, size: Int, depth: Int): Path = {
     val pathBuilder = new StringBuilder("")
     val initialDepth = depth
@@ -51,7 +54,7 @@ object Path {
     }
     val path = pathBuilder.toString
     if (path.length != initialDepth) {
-      throw new Exception(s"""unable to build path, found: ${path}""")
+      throw UnableToBuildPathException(path)
     }
     path
   }

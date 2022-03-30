@@ -1,6 +1,6 @@
 package com.cyrildever.merkle.tree
 
-import com.cyrildever.hash.Hash.SHA_256
+import com.cyrildever.merkle.hash.Hash.SHA_256
 
 /**
  * Define the `MerkleTree` options
