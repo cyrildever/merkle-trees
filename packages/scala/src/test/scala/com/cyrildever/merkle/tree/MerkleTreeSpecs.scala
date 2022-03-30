@@ -1,6 +1,7 @@
 package com.cyrildever.merkle.tree
 
 import com.cyrildever.BasicUnitSpecs
+import com.cyrildever.merkle.Proof
 import com.cyrildever.merkle.exception._
 import com.cyrildever.merkle.hash.Hash._
 import com.cyrildever.merkle.hash.HashFunction._
@@ -91,5 +92,22 @@ class MerkleTreeSpecs extends BasicUnitSpecs {
     val expected = s"""{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}"""
     val found = tree.toJSON
     found should equal (expected)
+  }
+
+  "MerkleTree.validateProof" should "only accept a valid proof" in {
+    val toProve = Proof.from("ZTE5NWRhNGM0MGYyNmI4NWViMmI2MjJlMWMwZDFjZTczZDRkOGJmNDE4M2NkODA4ZDM5YTU3ZTg1NTA5MzQ0NmFhNzVjZDVlMjUzMWYwNzJjNzAwN2JiMTkxZmViZGNkYmUyM2Q5YTRhZTMwY2RiYjg0Y2I1YTg2OWNlOWFiODM1YjQxMzYyYmM4MmI3ZjNkNTZlZGM1YTMwNmRiMjIxMDU3MDdkMDFmZjQ4MTllMjZmYWVmOTcyNGEyZDQwNmM5LjExMC5zaGEtMjU2LjU=")
+    val json = s"""{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}"""
+    val tree = MerkleTree.fromJSON(json)
+    tree.size() should equal (toProve.size)
+    val isValid = tree.validateProof(toProve, sha256("data2".getBytes), "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+    isValid shouldBe true
+
+    // Wrong data
+    val validateWrongData = tree.validateProof(toProve, sha256("data6".getBytes), "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+    validateWrongData shouldBe false
+
+    // Wrong proof even with existing data
+    val validateWrongProof = tree.validateProof(toProve, sha256("data1".getBytes), "e9e1bc4a10c502ef995ede1914b0186ed288b8dde80c8c533a0f93a96490f995")
+    validateWrongProof shouldBe false
   }
 }

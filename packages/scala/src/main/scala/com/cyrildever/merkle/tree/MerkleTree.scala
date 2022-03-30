@@ -104,6 +104,36 @@ case class MerkleTree(options: MerkleTreeOptions = MerkleTreeOptions.DEFAULT) {
    */
   def useDoubleHash: Boolean = options.doubleHash
 
+  /**
+   * Check that the passed proof matches the passed data using the passed root hash
+   *
+   * @param proof The proof to use
+   * @param leaf The (hashed) data to check
+   * @param rootHash The hexadecimal representation of the root hash to compare to
+   * @param rebuildingProof [optional] Set to `true` to use the method rebuilding the proof (default: `false`)
+   * @return `true` if the proof is valid for the passed leaf
+   */
+  def validateProof(proof: Proof, leaf: Hash, rootHash: String, rebuildingProof: Boolean = true): Boolean =
+    if (!isReady || rootHash != getRootHash) {
+      false
+    } else {
+      if (rebuildingProof) {
+        val rebuilt = getProof(leaf)
+        rebuilt.isDefined && proof.toString == rebuilt.get.toString
+      } else {
+        val path = proof.path.reverse
+        val trail = proof.trail.reverse
+        val (proved, _) = trail.zipWithIndex.foldLeft(leaf, 0) {
+          (h, current) => {
+            val idx = current._2
+            if (path.charAt(idx) == RIGHT) (hashFunction(current._1 ++ h._1), idx)
+            else (hashFunction(h._1 ++ current._1), idx)
+          }
+        }
+        proved.toHex == rootHash
+      }
+    }
+
   // For internal use only
 
   private def make(): Seq[Option[Proof]] =
