@@ -2,6 +2,13 @@ package com.cyrildever.hash
 
 import scorex.crypto.hash._
 
+/**
+ * Hash utilities
+ *
+ * @author  Cyril Dever
+ * @since   1.0
+ * @version 1.0
+ */
 object Hash {
   type Hash = Seq[Byte]
   type Hashes = Seq[Hash]

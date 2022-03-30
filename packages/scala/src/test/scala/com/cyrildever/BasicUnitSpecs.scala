@@ -1,4 +1,4 @@
-package com.cyrildever.merkle
+package com.cyrildever
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
