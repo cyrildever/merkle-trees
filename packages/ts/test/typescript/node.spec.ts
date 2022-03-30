@@ -53,6 +53,8 @@ describe('Hash', () => {
       ].map(_ => Buffer.from(_, 'hex'))
 
       const found = sortHashes(hashes)
+      found.should.have.lengthOf(3)
+      found[0].toString('hex').should.equal('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')
       found.should.eqls(expected)
     })
   })
@@ -134,7 +136,7 @@ describe('MerkleTree', () => {
     })
   })
   describe('depth', () => {
-    it('should return the correct depth or an error', async () => {
+    it('should return the correct depth or throw an error', async () => {
       const tree = new MerkleTree()
       expect(() => tree.depth()).to.throw('tree not built')
 
@@ -156,7 +158,6 @@ describe('MerkleTree', () => {
       const proof1 = tree.getProof(await sha256(Buffer.from('data1')))
       proof1.isSome().should.be.true
       proof1.some().toString().should.equal(maybeProofs[0].some().toString())
-
 
       const proof2 = tree.getProof(await sha256(Buffer.from('data2')))
       proof2.isSome().should.be.true

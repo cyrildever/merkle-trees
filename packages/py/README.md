@@ -1,6 +1,10 @@
 # merkle-py
 _Python implementation of Merkle tree_
 
+This library defines my special implementation in Python of the notorious Merkle trees. Feel free to use it (with the appropriate credits).
+
+Other implementations include: [Go](../go/README.md), [Scala](../scala/README.md) and [TypeScript](../ts/README.md).
+
 
 ### Usage
 

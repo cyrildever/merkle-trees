@@ -35,5 +35,7 @@ func TestSortHashes(t *testing.T) {
 		utls.Must(utls.FromHex("abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789")),
 	}
 	found := hash.SortHashes(hashes)
+	assert.Equal(t, len(found), 3)
+	assert.Equal(t, utls.ToHex(found[0]), "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef")
 	assert.DeepEqual(t, found, expected)
 }

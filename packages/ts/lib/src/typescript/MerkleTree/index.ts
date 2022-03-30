@@ -25,12 +25,12 @@ export class MerkleTree {
   /**
    * Add leaves, either sources (by passing `true` to the first parameter) or hashes
    * 
-   * @param {boolean} doHash - Set to `true` to hash the passed source data (default: `false`)
+   * @param {boolean} doHash - Set to `true` to hash the passed source data
    * @param {Buffer[]} data - The data to use as leaf
    * @returns a promise of the corresponding array of `MerkleProof` for the data
    * @throws {ImpossibleToSortError | TreeNotBuiltError}
    */
-  public async addLeaves(doHash = false, ...data: Array<Buffer>): Promise<ReadonlyArray<Maybe<MerkleProof>>> {
+  public async addLeaves(doHash: boolean, ...data: Array<Buffer>): Promise<ReadonlyArray<Maybe<MerkleProof>>> {
     this.isReady = false
     if (data.length === 0) {
       return Promise.reject(new Error('empty tree'))
@@ -177,7 +177,7 @@ export class MerkleTree {
       const options = json.options !== undefined ? json.options as MerkleTreeOptions : MerkleTreeOptions()
       const tree = new MerkleTree(options)
       if (json.leaves === undefined || Object.keys(json.leaves).length === 0 && Object.getPrototypeOf(json.leaves) === Object.prototype) {
-        return tree
+        return Promise.reject(new Error('empty tree'))
       }
       const leavesHex: Array<string> = json.leaves
       /* eslint-enable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument */

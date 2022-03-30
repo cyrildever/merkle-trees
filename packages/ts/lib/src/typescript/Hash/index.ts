@@ -53,7 +53,7 @@ const regexSha256 = new RegExp(/^[a-f0-9]{64}$/i)
  * Determine if it's a hash
  * 
  * @param {Buffer} h - The hash to test
- * @param {string} engine - the hashing function name, eg. `'sha-256'`
+ * @param {string} engine - The hashing function name, eg. `'sha-256'`
  * @returns `true` if the passed hash is possibly a rightful hash
  */
 export const isCorrectHash = (h: Buffer, engine: string): boolean => {
