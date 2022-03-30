@@ -1,6 +1,7 @@
 package com.cyrildever.merkle.hash
 
 import com.cyrildever.BasicUnitSpecs
+import com.cyrildever.merkle.hash.HashFunction._
 
 /**
  * HashSpecs test class

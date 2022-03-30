@@ -1,8 +1,5 @@
 package com.cyrildever.merkle.hash
 
-import com.cyrildever.merkle.exception.InvalidEngineException
-import scorex.crypto.hash._
-
 /**
  * Hash utilities
  *
@@ -21,18 +18,6 @@ object Hash {
     def toHex: String = h.map(b => f"$b%02x").mkString.toLowerCase
   }
   def fromHex(str: String): Hash = Hex.stringToSomeByteArray(str).getOrElse(Seq.empty)
-
-  @throws[InvalidEngineException]
-  def buildHashFunction(engine: String, doubleHash: Boolean = false): Seq[Byte] => Hash =
-    (item: Seq[Byte]) => engine match {
-      case SHA_256 =>
-        if (doubleHash) {
-         Sha256.hash(Sha256(item.toArray))
-        } else {
-          Sha256.hash(item.toArray)
-        }
-      case _ => throw InvalidEngineException(engine)
-    }
 
   /**
    * Determine if it's a hash
