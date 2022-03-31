@@ -12,6 +12,20 @@ Other implementations include: [Go](../go/README.md), [Scala](../scala/README.md
 $ pip install merkle-py
 ```
 
+Here are some simple examples of how it works:
+```python
+from merklepy.tree import MerkleTree, MerkleTreeOption
+from merklepy.hash import build_hash_function, SHA_256
+
+
+```
+
+### Tests
+
+```console
+$ python3 -m unittest discover
+```
+
 
 ### License
 
