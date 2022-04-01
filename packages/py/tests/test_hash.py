@@ -1,5 +1,6 @@
 from unittest import TestCase
 from .context import *
+
 from merklepy.exception import InvalidEngineError
 from merklepy.hash import build_hash_function, is_correct_hash, SHA_256, sort_hashes
 
