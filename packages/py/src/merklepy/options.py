@@ -1,3 +1,4 @@
+from collections import namedtuple
 import json
 
 from merklepy.hash import SHA_256
@@ -10,11 +11,11 @@ class MerkleTreeOptions(object):
     Parameters
     ----------
     doubleHash : bool, optional
-        Set to `true` to hash nodes twice (the default is `false`).
+        Set to `True` to hash nodes twice (the default is `False`).
     engine : str, optional
         The name of the hashing function (the default is `'sha-256'`).
     sort : bool, optional
-        Set to `true` to lexicographically sort leaves (the default is `false`).
+        Set to `True` to lexicographically sort leaves (the default is `False`).
     """
 
     def __init__(self, doubleHash: bool = False, engine: str = SHA_256, sort: bool = False):
