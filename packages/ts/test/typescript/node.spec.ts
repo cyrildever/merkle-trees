@@ -23,6 +23,8 @@ describe('Hash', () => {
       expected = '954d5a49fd70d9b8bcdb35d252267829957f7ef7fa6c74f88419bdc5e82209f4'
       found = await doubleSha256(Buffer.from('test'))
       found.toString('hex').should.equal(expected)
+
+      expect(() => buildHashFunction('wrong-engine')).to.throw('invalid engine: wrong-engine')
     })
   })
   describe('isCorrectHash', () => {
