@@ -16,8 +16,8 @@ export class MerkleTree {
 
   constructor(options?: MerkleTreeOptions) {
     this.leaves = new Array<Hash>()
-    this.levels = new Array<Hashes>()
     this.leavesHex = []
+    this.levels = new Array<Hashes>()
     this.options = options !== undefined ? options : MerkleTreeOptions()
     this.hashFunction = buildHashFunction(this.options.engine, this.options.doubleHash)
   }

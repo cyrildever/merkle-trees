@@ -31,7 +31,7 @@ const options1 = {
 const tree1 = new MerkleTree(options1)
 
 // Build a tree from the raw data
-const proofs1 = await tree1.addLeaves(true, '1', '2', '3'))
+const proofs1 = await tree1.addLeaves(true, '1', '2', '3')
 const rootHash = tree1.getRootHash()
 assert(tree1.depth() === 1)
 

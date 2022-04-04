@@ -25,4 +25,7 @@ func TestBuildFunction(t *testing.T) {
 	}
 	found = doubleSha256([]byte("test"))
 	assert.Equal(t, utls.ToHex(found), expected)
+
+	_, err = hash.BuildFunction("wrong-engine")
+	assert.Error(t, err, "invalid engine: wrong-engine")
 }
