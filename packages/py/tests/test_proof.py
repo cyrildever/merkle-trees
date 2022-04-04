@@ -1,9 +1,8 @@
 from unittest import TestCase
-
-from merklepy.exception import InvalidMerkleProofError
 from .context import *
 import base64
 
+from merklepy.exception import InvalidMerkleProofError
 from merklepy.hash import SHA_256
 from merklepy.proof import Proof, proof_from
 

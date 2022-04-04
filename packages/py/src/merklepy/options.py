@@ -1,4 +1,3 @@
-from collections import namedtuple
 import json
 
 from merklepy.hash import SHA_256

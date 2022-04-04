@@ -1,10 +1,11 @@
+from functools import reduce
 import json
 from typing import Optional
 
 from merklepy.exception import EmptyTreeError, InvalidJSONError, TreeNotBuildError
 from merklepy.hash import Hash, Hashes, build_hash_function, is_correct_hash, sort_hashes
 from merklepy.options import MerkleTreeOptions
-from merklepy.path import build_path
+from merklepy.path import RIGHT, build_path
 from merklepy.proof import Proof
 
 
@@ -106,6 +107,41 @@ class MerkleTree(object):
         """Returns `true` if the current Merkle tree uses double hashing, `false` otherwise"""
         return self._options.doubleHash
 
+    def validate_proof(self, proof: Proof, leaf: Hash, root_hash: str, rebuilding_proof: bool = False) -> bool:
+        """
+        Check that the passed proof matches the passed data using the passed root hash
+
+        Parameters
+        ----------
+        proof : Proof
+            The proof to use
+        leaf : Hash
+            The (hashed) data to check
+        root_hash : str
+            The hexadecimal representation of the root hash to compare to
+        rebuilding_proof : bool, optional
+            Set to `True` to use the method rebuilding the proof (default: `False`)
+
+        Returns
+        -------
+        bool
+            `True` if the proof is valid for the passed leaf
+        """
+        if self._isReady == False or root_hash != self.get_root_hash():
+            return False
+        if rebuilding_proof == True:
+            rebuilt = self.get_proof(leaf)
+            if rebuilt is None:
+                return False
+            return rebuilt.to_string() == proof.to_string()
+        else:
+            path = proof.path[::-1]
+            trail = proof.trail[::-1]
+            hFn = self._hashFunction
+            proved = reduce(lambda h, tuple: hFn(tuple[1] + h) if path[tuple[0]] == RIGHT else hFn(
+                h + tuple[1]), [(idx, current) for idx, current in enumerate(trail)], leaf)
+            return proved.hex() == root_hash
+
     # For internal use only
 
     def _make(self):
@@ -144,7 +180,7 @@ def tree_from(json_string: str) -> MerkleTree:
     """Build a `MerkleTree` instance from the passed JSON string"""
     try:
         js = json.loads(json_string)
-        options: MerkleTreeOptions = MerkleTreeOptions() if 'options' not in js else MerkleTreeOptions(
+        options = MerkleTreeOptions() if 'options' not in js else MerkleTreeOptions(
             js['options']['doubleHash'], js['options']['engine'], js['options']['sort'])
         tree = MerkleTree(options)
         if 'leaves' not in js or len(js['leaves']) == 0:
