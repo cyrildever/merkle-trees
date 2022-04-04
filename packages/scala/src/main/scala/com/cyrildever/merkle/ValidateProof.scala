@@ -11,7 +11,7 @@ package com.cyrildever.merkle
  * }}}
  */
 object ValidateProof extends App {
-  // TODO
+  // TODO ###
   try {
     println("")
     println("COPYRIGHT NOTICE")

@@ -1,4 +1,5 @@
 import base64
+from pyutls.hex import from_hex, to_hex
 import re
 
 from merklepy.exception import InvalidMerkleProofError
@@ -38,7 +39,7 @@ class Proof(object):
 
             Base64('&lt;hash1&gt;&lt;hash2&gt;.11.sha-256.4')
         """
-        trail_hex = ''.join(map(_to_hex_string, self.trail))
+        trail_hex = ''.join(map(to_hex, self.trail))
         readable_proof = '.'.join(
             [trail_hex, self.path, self.engine, str(self.size)])
         return base64.b64encode(bytes(readable_proof, 'utf-8')).decode('utf-8')
@@ -60,12 +61,7 @@ def proof_from(string: str) -> Proof:
         raise InvalidMerkleProofError(string)
     if engine == SHA_256:
         hashes = list(filter(lambda item: len(item) == 32,
-                             map(bytes.fromhex, re.split('(.{64})', parts[0]))))
+                             map(from_hex, re.split('(.{64})', parts[0]))))
         return Proof(hashes, path, size, engine)
     else:
         raise InvalidMerkleProofError(string)
-
-
-# TODO Move to py-utls lib
-def _to_hex_string(barray):
-    return ''.join('{:02x}'.format(x) for x in barray)
