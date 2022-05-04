@@ -20,3 +20,4 @@
 *.log
 bin
 merkle-tree
+go
