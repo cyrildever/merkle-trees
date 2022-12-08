@@ -1,5 +1,4 @@
-import { Maybe, None, Some } from 'monet'
-import { reverse } from 'ts-utls'
+import { Maybe, None, reverse, Some } from 'ts-utls'
 
 import {
   buildHashFunction, buildPath, Hash, Hashes, HashFunction, ImpossibleToSortError, InvalidJSONError, isCorrectHash,

@@ -1,6 +1,6 @@
 organization := "com.cyrildever"
 name := "merkle-tree"
-version := "1.0.3"
+version := "1.1.0"
 scalaVersion := "2.12.13"
 
 assemblyMergeStrategy in assembly := {
