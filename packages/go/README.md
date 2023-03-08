@@ -14,14 +14,14 @@ Other implementations include: [Python](../py/README.md), [Scala](../scala/READM
 ### Usage
 
 ```console
-$ go get github.com/cyrildever/merkle-trees/packages/go
+$ go get github.com/cyrildever/merkle-trees
 ```
 
 Here are some simple examples of how it works:
 ```golang
 import (
-    "github.com/cyrildever/merkle-trees/packages/go/model/hash"
-    "github.com/cyrildever/merkle-trees/packages/go/model/merkle"
+    "github.com/cyrildever/merkle-trees/model/hash"
+    "github.com/cyrildever/merkle-trees/model/merkle"
 
     utls "github.com/cyrildever/go-utls/common/utils"
 )
