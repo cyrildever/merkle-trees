@@ -60,7 +60,7 @@ $ sbt
 
 ### License
 
-This library is distributed under an MIT license.
+This library is distributed under an MIT license. \
 See the [LICENSE](../../LICENSE) file.
 
 

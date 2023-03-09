@@ -7,7 +7,7 @@ package com.cyrildever.merkle
  * @since   1.0
  * @version 1.0
  * @example {{{
- *  $ sbt assembly && java -cp target/scala-2.12/merkle-tree-1.0.0.jar com.cyrildever.merkle.ValidateProof '' '' '' ''
+ *  $ sbt assembly && java -cp target/scala-2.12/merkle-tree-1.2.0.jar com.cyrildever.merkle.ValidateProof '' '' '' ''
  * }}}
  */
 object ValidateProof extends App {
@@ -18,7 +18,7 @@ object ValidateProof extends App {
     println("================")
     println("This is my implementation of Merkle tree for the JVM in Scala. It's available under a MIT license.")
     println("")
-    println("© 2022 Cyril Dever. All rights reserved.")
+    println("© 2022-2023 Cyril Dever. All rights reserved.")
     println("")
   } catch {
     case e: Exception =>
