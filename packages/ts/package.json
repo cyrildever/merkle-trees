@@ -1,7 +1,7 @@
 {
   "name": "merkle-ts",
   "description": "TypeScript implementation of Merkle tree",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "dist/lib/src/typescript/index.js",
   "types": "dist/lib/src/typescript/index.d.ts",
   "scripts": {
