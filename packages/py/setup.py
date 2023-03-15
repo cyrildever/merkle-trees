@@ -11,7 +11,7 @@ setuptools.setup(
     description="Merkle tree for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/cyrildever/merkle-trees/packages/py",
+    url="https://github.com/cyrildever/merkle-trees/tree/master/packages/py",
     project_urls={
         "Bug Tracker": "https://github.com/cyrildever/merkle-trees/issues",
     },
