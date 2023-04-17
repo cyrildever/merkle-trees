@@ -1,10 +1,15 @@
 # merkle-py
 _Python implementation of Merkle tree_
 
+![Github tag (latest by date)](https://img.shields.io/github/v/tag/cyrildever/merkle-trees)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/merkle-py)
+![Github last commit](https://img.shields.io/github/last-commit/cyrildever/merkle-trees)
+![Github issues](https://img.shields.io/github/issues/cyrildever/merkle-trees)
+![PyPI - License](https://img.shields.io/pypi/l/merkle-py)
+
 This library defines my special implementation in Python of the notorious Merkle trees. Feel free to use it (with the appropriate credits).
 
 Other implementations include: [Go](../go/README.md), [Scala](../scala/README.md) and [TypeScript](../ts/README.md).
-
 
 ### Usage
 
@@ -62,7 +67,7 @@ $ python3 -m unittest discover
 
 ### License
 
-This library is distributed under an MIT license.
+This library is distributed under a MIT license. \
 See the [LICENSE](LICENSE) file.
 
 

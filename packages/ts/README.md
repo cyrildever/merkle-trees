@@ -9,9 +9,7 @@ _TypeScript implementation of Merkle tree_
 
 This library defines my special implementation in TypeScript of the notorious Merkle trees. Feel free to use it (with the appropriate credits).
 
-
 Other implementations include: [Go](../go/README.md), [Python](../py/README.md) and [Scala](../scala/README.md).
-
 
 ### Usage
 
@@ -61,7 +59,7 @@ In other words, this implementation is either not made for a growing tree, or sh
 
 ### License
 
-This library is distributed under an MIT license.
+This library is distributed under a MIT license. \
 See the [LICENSE](LICENSE) file.
 
 

@@ -10,7 +10,6 @@ This library defines my special implementation in Go of the notorious Merkle tre
 
 Other implementations include: [Python](../py/README.md), [Scala](../scala/README.md) and [TypeScript](../ts/README.md).
 
-
 ### Usage
 
 ```console
@@ -72,7 +71,7 @@ $ go build -o merkle-tree
 
 ### License
 
-This library is distributed under an MIT license.
+This library is distributed under a MIT license. \
 See the [LICENSE](../../LICENSE) file.
 
 
