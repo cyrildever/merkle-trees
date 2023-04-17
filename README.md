@@ -10,7 +10,7 @@ This repository holds my implementations of Merkle trees in [Go](packages/go/REA
 
 ### License
 
-These libraries are distributed under an MIT license.
+These libraries are distributed under a MIT license. \
 See the [LICENSE](LICENSE) file.
 
 
