@@ -11,7 +11,7 @@ import (
 // Usage
 //
 // Build:
-// - `go build -o merkle-tree && ./merkle-tree`
+// - `go build -o merkle-tree && go test ./... && ./merkle-tree`
 func main() {
 	log := logger.Init("main", "main")
 
