@@ -1,14 +1,14 @@
 organization := "com.cyrildever"
 name := "merkle-tree"
-version := "1.2.3"
+version := "1.2.4"
 scalaVersion := "2.12.13"
 
-assemblyMergeStrategy in assembly := {
+assembly / assemblyMergeStrategy := {
   case PathList("META-INF", _) => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
-mainClass in assembly := Some("com.cyrildever.merkle.ValidateProof")
-assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
+assembly / mainClass := Some("com.cyrildever.merkle.ValidateProof")
+assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
