@@ -1,6 +1,6 @@
 organization := "com.cyrildever"
 name := "merkle-tree"
-version := "1.2.5"
+version := "1.2.6"
 scalaVersion := "2.12.13"
 
 assembly / assemblyMergeStrategy := {
@@ -17,6 +17,6 @@ resolvers += "Sonatype Releases" at "https://oss.sonatype.org/content/repositori
 libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "4.1.0",
   "org.json4s" %% "json4s-jackson" % "4.0.6",
-  "org.scalatest" %% "scalatest" % "3.2.16" % "test",
+  "org.scalatest" %% "scalatest" % "3.2.17" % "test",
   "org.scorexfoundation" %% "scrypto" % "2.3.0"
 )
