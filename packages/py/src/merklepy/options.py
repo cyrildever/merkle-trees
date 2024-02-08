@@ -1,6 +1,6 @@
 import json
 
-from merklepy.hash import SHA_256
+from merklepy import SHA_256
 
 
 class MerkleTreeOptions(object):
@@ -17,11 +17,13 @@ class MerkleTreeOptions(object):
         Set to `True` to lexicographically sort leaves (the default is `False`).
     """
 
-    def __init__(self, doubleHash: bool = False, engine: str = SHA_256, sort: bool = False):
+    def __init__(
+        self, doubleHash: bool = False, engine: str = SHA_256, sort: bool = False
+    ):
         self.doubleHash = doubleHash
         self.engine = engine
         self.sort = sort
 
     def to_json(self) -> str:
         """Returns the JSON-stringified representation of the current `MerkleTreeOptions`"""
-        return json.dumps(self.__dict__, separators=(',', ':'))
+        return json.dumps(self.__dict__, separators=(",", ":"))

@@ -1,11 +1,11 @@
 import math
 
-from merklepy.exception import UnableToBuildPathError
+from merklepy import UnableToBuildPathError
 
 Path = str
 
-LEFT = '1'
-RIGHT = '0'
+LEFT = "1"
+RIGHT = "0"
 
 
 def _half_bucket(using: int) -> float:
@@ -35,7 +35,7 @@ def build_path(index: int, size: int, depth: int) -> Path:
     UnableToBuildPathError
         If the path length is different from the tree depth.
     """
-    path = ''
+    path = ""
     initial_depth = depth
     while size > 0 and depth > 0:
         half = _half_bucket(size)

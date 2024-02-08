@@ -2,11 +2,20 @@ from functools import reduce
 import json
 from typing import Optional
 
-from merklepy.exception import EmptyTreeError, InvalidJSONError, TreeNotBuildError
-from merklepy.hash import Hash, Hashes, build_hash_function, is_correct_hash, sort_hashes
-from merklepy.options import MerkleTreeOptions
-from merklepy.path import RIGHT, build_path
-from merklepy.proof import Proof
+from merklepy import (
+    build_hash_function,
+    build_path,
+    EmptyTreeError,
+    Hash,
+    Hashes,
+    InvalidJSONError,
+    is_correct_hash,
+    MerkleTreeOptions,
+    TreeNotBuildError,
+    Proof,
+    RIGHT,
+    sort_hashes,
+)
 
 
 class MerkleTree(object):
@@ -17,16 +26,18 @@ class MerkleTree(object):
         self._leaves: Hashes = []
         self._leavesHex: list[str] = []
         self._levels: list[Hashes] = []
-        self._hashFunction = build_hash_function(
-            options.engine, options.doubleHash)
+        self._hashFunction = build_hash_function(options.engine, options.doubleHash)
 
     def add_leaves(self, do_hash: bool, *args: bytes) -> list[Optional[Proof]]:
         """Add leaves, either sources (by passing `True` to the first parameter) or hashes"""
         self._isReady = False
         if len(args) == 0:
             raise EmptyTreeError()
-        leaves = list(map(self._hashFunction, args)) if do_hash == True else list(
-            filter(lambda h: is_correct_hash(h, self.get_engine()), args))
+        leaves = (
+            list(map(self._hashFunction, args))
+            if do_hash == True
+            else list(filter(lambda h: is_correct_hash(h, self.get_engine()), args))
+        )
         if self._options.sort == True:
             self._sort()
         self._leaves = leaves
@@ -63,7 +74,11 @@ class MerkleTree(object):
             index = self._leaves.index(leaf)
             path = build_path(index, self.size(), self.depth())
             trail = list(
-                map(lambda tuple: self._levels[tuple[0] + 1][tuple[1]], [(i, int(l)) for i, l in enumerate(path)]))
+                map(
+                    lambda tuple: self._levels[tuple[0] + 1][tuple[1]],
+                    [(i, int(l)) for i, l in enumerate(path)],
+                )
+            )
             if len(trail) == 0:
                 return None
             return Proof(trail, path, self.size(), self.get_engine())
@@ -107,7 +122,9 @@ class MerkleTree(object):
         """Returns `true` if the current Merkle tree uses double hashing, `false` otherwise"""
         return self._options.doubleHash
 
-    def validate_proof(self, proof: Proof, leaf: Hash, root_hash: str, rebuilding_proof: bool = False) -> bool:
+    def validate_proof(
+        self, proof: Proof, leaf: Hash, root_hash: str, rebuilding_proof: bool = False
+    ) -> bool:
         """
         Check that the passed proof matches the passed data using the passed root hash
 
@@ -138,8 +155,13 @@ class MerkleTree(object):
             path = proof.path[::-1]
             trail = proof.trail[::-1]
             hFn = self._hashFunction
-            proved = reduce(lambda h, tuple: hFn(tuple[1] + h) if path[tuple[0]] == RIGHT else hFn(
-                h + tuple[1]), [(idx, current) for idx, current in enumerate(trail)], leaf)
+            proved = reduce(
+                lambda h, tuple: (
+                    hFn(tuple[1] + h) if path[tuple[0]] == RIGHT else hFn(h + tuple[1])
+                ),
+                [(idx, current) for idx, current in enumerate(trail)],
+                leaf,
+            )
             return proved.hex() == root_hash
 
     # For internal use only
@@ -165,8 +187,7 @@ class MerkleTree(object):
         from_level_count = len(from_level)
         for i in range(0, from_level_count, 2):
             if i + 1 <= from_level_count - 1:
-                nodes.append(self._hashFunction(
-                    from_level[i] + from_level[i+1]))
+                nodes.append(self._hashFunction(from_level[i] + from_level[i + 1]))
             else:
                 # Odd number promoted to the next level
                 nodes.append(from_level[i])
@@ -180,12 +201,19 @@ def tree_from(json_string: str) -> MerkleTree:
     """Build a `MerkleTree` instance from the passed JSON string"""
     try:
         js = json.loads(json_string)
-        options = MerkleTreeOptions() if 'options' not in js else MerkleTreeOptions(
-            js['options']['doubleHash'], js['options']['engine'], js['options']['sort'])
+        options = (
+            MerkleTreeOptions()
+            if "options" not in js
+            else MerkleTreeOptions(
+                js["options"]["doubleHash"],
+                js["options"]["engine"],
+                js["options"]["sort"],
+            )
+        )
         tree = MerkleTree(options)
-        if 'leaves' not in js or len(js['leaves']) == 0:
+        if "leaves" not in js or len(js["leaves"]) == 0:
             raise EmptyTreeError()
-        leaves = list(map(bytes.fromhex, js['leaves']))
+        leaves = list(map(bytes.fromhex, js["leaves"]))
         tree.add_leaves(False, *leaves)
         return tree
     except Exception as error:

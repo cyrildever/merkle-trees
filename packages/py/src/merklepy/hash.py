@@ -2,7 +2,7 @@ import hashlib
 import re
 from typing import Callable
 
-from merklepy.exception import InvalidEngineError
+from merklepy import InvalidEngineError
 
 Hash = bytes
 Hashes = list[Hash]
@@ -11,15 +11,21 @@ HashFunction = Callable[[bytes], Hash]
 
 
 # Supported hash functions
-SHA_256 = 'sha-256'
+SHA_256 = "sha-256"
 
 regex_sha256 = re.compile(r"""^[a-f0-9]{64}$""", re.I)
 
 
 def build_hash_function(engine: str, doubleHash: bool = False) -> HashFunction:
     if engine == SHA_256:
+
         def Sha256(item: bytes) -> Hash:
-            return hashlib.sha256(hashlib.sha256(item).digest()).digest() if doubleHash else hashlib.sha256(item).digest()
+            return (
+                hashlib.sha256(hashlib.sha256(item).digest()).digest()
+                if doubleHash
+                else hashlib.sha256(item).digest()
+            )
+
         return Sha256
     else:
         raise InvalidEngineError(engine)

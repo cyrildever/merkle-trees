@@ -19,8 +19,7 @@ $ pip install merkle-py
 
 Here are some simple examples of how it works:
 ```python
-from merklepy.tree import MerkleTree, MerkleTreeOptions
-from merklepy.hash import build_hash_function, SHA_256
+from merklepy import MerkleTree, MerkleTreeOptions, build_hash_function, SHA_256
 
 options1 = MerkleTreeOptions(doubleHash= True, engine='sha-256', sort=True)
 tree1 = MerkleTree(options1)
@@ -61,6 +60,9 @@ In other words, this implementation is either not made for a growing tree, or sh
 ### Tests
 
 ```console
+$ git clone https://github.com/cyrildever/merkle-trees.git
+$ cd merkle-trees/packages/py/
+$ pip install -e .
 $ python3 -m unittest discover
 ```
 
@@ -72,4 +74,4 @@ See the [LICENSE](LICENSE) file.
 
 
 <hr />
-&copy; 2022-2023 Cyril Dever. All rights reserved.
+&copy; 2022-2024 Cyril Dever. All rights reserved.

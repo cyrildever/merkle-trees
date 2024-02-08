@@ -1,10 +1,8 @@
 import base64
-from pyutls.hex import from_hex, to_hex
 import re
+from pyutls import from_hex, to_hex
 
-from merklepy.exception import InvalidMerkleProofError
-from merklepy.hash import SHA_256, Hashes
-from merklepy.path import Path
+from merklepy import InvalidMerkleProofError, SHA_256, Hashes, Path
 
 
 class Proof(object):
@@ -39,19 +37,18 @@ class Proof(object):
 
             Base64('&lt;hash1&gt;&lt;hash2&gt;.11.sha-256.4')
         """
-        trail_hex = ''.join(map(to_hex, self.trail))
-        readable_proof = '.'.join(
-            [trail_hex, self.path, self.engine, str(self.size)])
-        return base64.b64encode(bytes(readable_proof, 'utf-8')).decode('utf-8')
+        trail_hex = "".join(map(to_hex, self.trail))
+        readable_proof = ".".join([trail_hex, self.path, self.engine, str(self.size)])
+        return base64.b64encode(bytes(readable_proof, "utf-8")).decode("utf-8")
 
 
 def proof_from(string: str) -> Proof:
     """Build a `Proof` from the passed string, provided it's an actual stringified proof"""
     try:
-        decoded = str(base64.b64decode(string), 'utf-8')
+        decoded = str(base64.b64decode(string), "utf-8")
     except Exception as error:
         raise InvalidMerkleProofError(string) from error
-    parts = decoded.split('.')
+    parts = decoded.split(".")
     if len(parts) != 4:
         raise InvalidMerkleProofError(string)
     path = parts[1]
@@ -60,8 +57,12 @@ def proof_from(string: str) -> Proof:
     if size == 0:
         raise InvalidMerkleProofError(string)
     if engine == SHA_256:
-        hashes = list(filter(lambda item: len(item) == 32,
-                             map(from_hex, re.split('(.{64})', parts[0]))))
+        hashes = list(
+            filter(
+                lambda item: len(item) == 32,
+                map(from_hex, re.split("(.{64})", parts[0])),
+            )
+        )
         return Proof(hashes, path, size, engine)
     else:
         raise InvalidMerkleProofError(string)
