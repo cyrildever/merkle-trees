@@ -1,17 +1,19 @@
+import * as chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import 'mocha'
+
 import {
   buildHashFunction, buildPath, Hashes, isCorrectHash, MerkleProof, merkleProofFrom, MerkleTree, MerkleTreeOptions,
   SHA_256, sortHashes
 } from '../../lib/src/typescript'
 
-import * as chai from 'chai'
-import 'mocha'
-import chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 chai.should()
 const expect = chai.expect
 
 const sha256 = buildHashFunction(SHA_256)
 
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Hash', () => {
   describe('buildHashFunction', () => {
     it('should return the right SHA-256 function', async () => {
@@ -130,11 +132,9 @@ describe('MerkleProof', () => {
 describe('MerkleTree', () => {
   describe('addLeaves', () => {
     it('should fail if the tree remains empty', () => {
-      /* eslint-disable @typescript-eslint/no-floating-promises */
       const tree = new MerkleTree()
       expect(tree.addLeaves(true)).to.eventually.be.rejectedWith('empty tree')
       expect(tree.addLeaves(false, Buffer.from('123'))).to.eventually.be.rejectedWith('empty tree')
-      /* eslint-enable @typescript-eslint/no-floating-promises */
     })
   })
   describe('depth', () => {
@@ -180,7 +180,7 @@ describe('MerkleTree', () => {
   describe('fromJSON', () => {
     it('should create the right JSON', async () => {
       const empty = '{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":[]}'
-      expect(MerkleTree.fromJSON(empty)).to.eventually.be.rejectedWith('empty tree') // eslint-disable-line @typescript-eslint/no-floating-promises
+      expect(MerkleTree.fromJSON(empty)).to.eventually.be.rejectedWith('empty tree')
 
       const json = '{"options":{"doubleHash":false,"engine":"sha-256","sort":false},"leaves":["5b41362bc82b7f3d56edc5a306db22105707d01ff4819e26faef9724a2d406c9","d98cf53e0c8b77c14a96358d5b69584225b4bb9026423cbc2f7b0161894c402c","f60f2d65da046fcaaf8a10bd96b5630104b629e111aff46ce89792e1caa11b18","02c6edc2ad3e1f2f9a9c8fea18c0702c4d2d753440315037bc7f84ea4bba2542","e195da4c40f26b85eb2b622e1c0d1ce73d4d8bf4183cd808d39a57e855093446"]}'
       const found = await MerkleTree.fromJSON(json)
@@ -236,3 +236,4 @@ describe('MerkleTreeOptions', () => {
     defaultOptions.should.equal('{"doubleHash":false,"engine":"sha-256","sort":false}')
   })
 })
+/* eslint-enable @typescript-eslint/no-unused-expressions */

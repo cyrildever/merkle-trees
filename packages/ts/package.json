@@ -1,17 +1,17 @@
 {
   "name": "merkle-ts",
   "description": "TypeScript implementation of Merkle tree",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "main": "dist/lib/src/typescript/index.js",
   "types": "dist/lib/src/typescript/index.d.ts",
   "scripts": {
-    "compile": "eslint lib --ext .ts && tsc ",
-    "fix": "eslint lib --ext .ts --fix",
-    "test-browser": "tsc && browserify ./dist/test/typescript/browser.spec.js -o dist/test/index.js && live-server --port=9001 --mount=/:test/typescript",
+    "compile": "eslint lib/**/*.ts && tsc ",
+    "fix": "eslint lib/**/*.ts --fix",
+    "test-browser": "tsc && browserify ./dist/test/typescript/browser.spec.js -o dist/test/index.js && live-server --port=10001 --mount=/:test/typescript",
     "test-node": "tsc && mocha 'test/typescript/node.spec.ts' --require ts-node/register",
-    "test": "tsc && mocha 'test/typescript/node.spec.ts' --require ts-node/register && browserify ./dist/test/typescript/browser.spec.js -o dist/test/index.js && live-server --port=9001 --mount=/:test/typescript",
-    "fix-test": "eslint test --ext .ts --fix",
-    "test-on-windows": "tsc && browserify dist/test/typescript/index.spec.js -o dist/test/index.js && live-server --port=9001 --mount=/:test/typescript"
+    "test": "tsc && mocha 'test/typescript/node.spec.ts' --require ts-node/register && browserify ./dist/test/typescript/browser.spec.js -o dist/test/index.js && live-server --port=10001 --mount=/:test/typescript",
+    "fix-test": "eslint test/**/*.ts --fix",
+    "test-on-windows": "tsc && browserify dist/test/typescript/index.spec.js -o dist/test/index.js && live-server --port=10001 --mount=/:test/typescript"
   },
   "repository": {
     "type": "git",
@@ -30,22 +30,25 @@
   "homepage": "https://github.com/cyrildever/merkle-trees/packages/ts#readme",
   "dependencies": {
     "buffer": "^6.0.3",
-    "ts-utls": "^1.5.22"
+    "ts-utls": "^1.5.26"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.11",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.10.0",
+    "@types/chai": "^4.3.19",
     "@types/chai-as-promised": "^7.1.8",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.16",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^22.5.4",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
     "browserify": "^17.0.0",
-    "chai": "^4.4.0",
+    "chai": "^4.5.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.56.0",
-    "eslint-plugin-no-loops": "~0.3.0",
-    "mocha": "^10.2.0",
+    "eslint": "^9.10.0",
+    "eslint-plugin-no-loops": "~0.4.0",
+    "globals": "^15.9.0",
+    "mocha": "^10.7.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.6.2"
   }
 }

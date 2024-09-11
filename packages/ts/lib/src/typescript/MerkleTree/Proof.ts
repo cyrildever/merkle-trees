@@ -67,7 +67,7 @@ export const merkleProofFrom = (str: string): MerkleProof => {
       default:
         throw new InvalidMerkleProofError(str)
     }
-  } catch (_) {
+  } catch (_) { // eslint-disable-line @typescript-eslint/no-unused-vars
     throw new InvalidMerkleProofError(str)
   }
 }

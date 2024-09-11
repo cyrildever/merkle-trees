@@ -12,13 +12,10 @@
 <body>
   <div id="mocha"></div>
   <script src="../../node_modules/mocha/mocha.js"></script>
-  <script src="../../node_modules/chai/chai.js"></script>
   <script> mocha.setup('bdd');</script>
   <script src="../../dist/test/index.js"></script>
   <script>
-    chai.should();
     mocha.run();
-    var expect = chai.expect; //var because we want it to be attach on top of the global object
   </script>
 </body>
 

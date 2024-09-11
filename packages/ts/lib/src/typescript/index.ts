@@ -23,7 +23,7 @@ SOFTWARE.
 */
 
 if (typeof window !== 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-require-imports
   window.Buffer = window.Buffer || require('buffer').Buffer
 }
 
