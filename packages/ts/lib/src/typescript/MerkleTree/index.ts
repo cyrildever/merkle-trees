@@ -233,7 +233,7 @@ export class MerkleTree {
     try {
       this.leaves = sortHashes(this.leaves)
       return true
-    } catch (_) {
+    } catch (_) { // eslint-disable-line @typescript-eslint/no-unused-vars
       return false
     }
   }
