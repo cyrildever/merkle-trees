@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="merkle-py",
-    version="1.2.8",
+    version="1.2.9",
     author="Cyril Dever",
     author_mail="cdever@pep-s.com",
     description="Merkle tree for Python",
