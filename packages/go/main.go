@@ -29,7 +29,7 @@ func main() {
 	fmt.Println("================")
 	fmt.Println("This is my implementation of Merkle tree for Go. It's available under a MIT license.")
 	fmt.Println("")
-	fmt.Println("© 2022-2024 Cyril Dever. All rights reserved.")
+	fmt.Println("© 2022-2025 Cyril Dever. All rights reserved.")
 	fmt.Println("")
 
 	log.Info("Enjoy~")
