@@ -34,7 +34,7 @@ export const buildHashFunction = (engine: string, doubleHash = false): HashFunct
           ? createHash('sha256').update(createHash('sha256').update(item).digest()).digest()
           : createHash('sha256').update(item).digest()
         )
-        : (item: Buffer) => subtle.digest({ name: 'SHA-256' }, item).then(Buffer.from)
+        : (item: Buffer) => subtle.digest({ name: 'SHA-256' }, item as BufferSource).then(Buffer.from)
           .then(result => doubleHash
             ? subtle.digest({ name: 'SHA-256' }, result).then(Buffer.from)
             : result)
